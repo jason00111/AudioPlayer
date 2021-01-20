@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!--    <base href="https://music-111.s3-us-west-2.amazonaws.com/">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="styles/tailwind.min.css" rel="stylesheet">
+    <!-- Favicon from https://www.freefavicon.com -->
+    <link rel="shortcut icon" href="favicon.ico"/>
+    <title>Player</title>
+</head>
+<body>
+<div class="m-12 p-6 max-w-screen-md bg-blue-50 rounded-3xl space-y-9">
+    <audio id="audio"></audio>
+
+    <div id="visualization" class="w-full flex justify-center items-end"></div>
+
+    <div id="songName" class="text-center h-10 text-3xl mb-9 truncate leading-10"></div>
+
+    <div id="progressContainer" class="relative bg-blue-200 w-full rounded-full h-3.5 cursor-pointer">
+        <div id="progressBar" class="bg-yellow-500 h-full rounded-full absolute top-0 left-0"></div>
+    </div>
+
+    <div id="controls" class="flex flex-wrap justify-center items-center text-blue-900 fill-current">
+        <!-- Icons by icon king1 on freeicons.io -->
+
+        <svg id="previousButton"
+             class="cursor-pointer hover:text-yellow-500 transform hover:scale-125 transition-all ease-out duration-200 m-4"
+             width="40px" height="40px" viewBox="0 0 20 20">
+            <path transform="translate(-2, -2)"
+                  d="M7,6 C7.55,6 8,6.45 8,7 L8,17 C8,17.55 7.55,18 7,18 C6.45,18 6,17.55 6,17 L6,7 C6,6.45 6.45,6 7,6 Z M10.66,12.82 L16.43,16.89 C17.09,17.36 18.01,16.88 18.01,16.07 L18.01,7.93 C18.01,7.12 17.1,6.65 16.43,7.11 L10.66,11.18 C10.09,11.58 10.09,12.42 10.66,12.82 Z"></path>
+        </svg>
+
+        <svg id="playButton"
+             class="cursor-pointer hover:text-yellow-500 transform hover:scale-125 transition-all ease-out duration-200 m-4"
+             width="60px" height="60px" viewBox="0 0 20 20">
+            <path transform="translate(-2, -2)"
+                  d="M7,6.82 L7,17.18 C7,17.97 7.87,18.45 8.54,18.02 L16.68,12.84 C17.3,12.45 17.3,11.55 16.68,11.15 L8.54,5.98 C7.87,5.55 7,6.03 7,6.82 Z"></path>
+        </svg>
+
+        <svg id="pauseButton"
+             class="hidden cursor-pointer hover:text-yellow-500 transform hover:scale-125 transition-all ease-out duration-200 m-4"
+             width="60px" height="60px" viewBox="0 0 20 20">
+            <path transform="translate(-2, -2)"
+                  d="M8,19 C9.1,19 10,18.1 10,17 L10,7 C10,5.9 9.1,5 8,5 C6.9,5 6,5.9 6,7 L6,17 C6,18.1 6.9,19 8,19 Z M14,7 L14,17 C14,18.1 14.9,19 16,19 C17.1,19 18,18.1 18,17 L18,7 C18,5.9 17.1,5 16,5 C14.9,5 14,5.9 14,7 Z"></path>
+        </svg>
+
+        <svg id="nextButton"
+             class="cursor-pointer hover:text-yellow-500 transform hover:scale-125 transition-all ease-out duration-200 m-4"
+             width="40px" height="40px" viewBox="0 0 20 20">
+            <path transform="translate(-2, -2)"
+                  d="M7.58,16.89 L13.35,12.82 C13.91,12.42 13.91,11.58 13.35,11.19 L7.58,7.11 C6.91,6.65 6,7.12 6,7.93 L6,16.07 C6,16.88 6.91,17.35 7.58,16.89 Z M16,7 L16,17 C16,17.55 16.45,18 17,18 C17.55,18 18,17.55 18,17 L18,7 C18,6.45 17.55,6 17,6 C16.45,6 16,6.45 16,7 Z"></path>
+        </svg>
+
+        <svg id="shuffleButton"
+             class="cursor-pointer hover:text-yellow-500 transform hover:scale-125 transition-all ease-out duration-200 m-4"
+             width="40px" height="40px" viewBox="0 0 20 20">
+            <path transform="translate(-2, -2)"
+                  d="M10.59,9.17 L6.12,4.7 C5.73,4.31 5.1,4.31 4.71,4.7 C4.32,5.09 4.32,5.72 4.71,6.11 L9.17,10.57 L10.59,9.17 Z M15.35,4.85 L16.54,6.04 L4.7,17.88 C4.31,18.27 4.31,18.9 4.7,19.29 C5.09,19.68 5.72,19.68 6.11,19.29 L17.96,7.46 L19.15,8.65 C19.46,8.96 20,8.74 20,8.29 L20,4.5 C20,4.22 19.78,4 19.5,4 L15.71,4 C15.26,4 15.04,4.54 15.35,4.85 Z M14.83,13.41 L13.42,14.82 L16.55,17.95 L15.35,19.15 C15.04,19.46 15.26,20 15.71,20 L19.5,20 C19.78,20 20,19.78 20,19.5 L20,15.71 C20,15.26 19.46,15.04 19.15,15.36 L17.96,16.55 L14.83,13.41 Z"></path>
+        </svg>
+
+        <svg id="muteButton"
+             class="cursor-pointer hover:text-yellow-500 transform hover:scale-125 transition-all ease-out duration-200 m-4"
+             width="40px" height="40px" viewBox="0 0 20 20">
+            <path transform="translate(-2, -2)"
+                  d="M3.63,3.63 C3.24,4.02 3.24,4.65 3.63,5.04 L7.29,8.7 L7,9 L4,9 C3.45,9 3,9.45 3,10 L3,14 C3,14.55 3.45,15 4,15 L7,15 L10.29,18.29 C10.92,18.92 12,18.47 12,17.58 L12,13.41 L16.18,17.59 C15.69,17.96 15.16,18.27 14.58,18.5 C14.22,18.65 14,19.03 14,19.42 C14,20.14 14.73,20.6 15.39,20.33 C16.19,20 16.94,19.56 17.61,19.02 L18.95,20.36 C19.34,20.75 19.97,20.75 20.36,20.36 C20.75,19.97 20.75,19.34 20.36,18.95 L5.05,3.63 C4.66,3.24 4.03,3.24 3.63,3.63 Z M19,12 C19,12.82 18.85,13.61 18.59,14.34 L20.12,15.87 C20.68,14.7 21,13.39 21,12 C21,8.17 18.6,4.89 15.22,3.6 C14.63,3.37 14,3.83 14,4.46 L14,4.65 C14,5.03 14.25,5.36 14.61,5.5 C17.18,6.54 19,9.06 19,12 Z M10.29,5.71 L10.12,5.88 L12,7.76 L12,6.41 C12,5.52 10.92,5.08 10.29,5.71 Z M16.5,12 C16.5,10.23 15.48,8.71 14,7.97 L14,9.76 L16.48,12.24 C16.49,12.16 16.5,12.08 16.5,12 Z"></path>
+        </svg>
+
+        <input type="range" id="volume" value="100" min="0" max="150" step="1"
+               class="w-40 cursor-pointer outline-none m-6">
+
+    </div>
+
+    <div id="songList" class="divide-y"></div>
+</div>
+
+<div class="text-xs m-12 p-6 max-w-screen-md space-y-2 text-center">
+    <p>
+        Music found at
+        <a href="https://freemusicarchive.org" target="_blank" class="text-blue-700">freemusicarchive.org</a>
+        is licensed under a
+        <a href="https://creativecommons.org/licenses/by-sa/3.0/us/" target="_blank" class="text-blue-700">
+            creative commons license.
+        </a>
+    </p>
+    <p>
+        Icons by icon king1 on
+        <a href="https://freeicons.io" target="_blank" class="text-blue-700">freeicons.io</a>.
+        Favicon from
+        <a href="https://www.freefavicon.com" target="_blank" class="text-blue-700">www.freefavicon.com</a>.
+    </p>
+    <p>
+        View source at
+        <a href="https://github.com/jason00111" target="_blank" class="text-blue-700">
+            GitHub <img alt="View source on GitHub" src="icons/GitHub-Mark-64px.png" class="h-4 inline">
+        </a>
+    </p>
+</div>
+<script>
+    const audioElement = document.getElementById('audio');
+    const playButton = document.getElementById('playButton');
+    const pauseButton = document.getElementById('pauseButton');
+    const previousButton = document.getElementById('previousButton');
+    const nextButton = document.getElementById('nextButton');
+    const muteButton = document.getElementById('muteButton');
+    const shuffleButton = document.getElementById('shuffleButton');
+    const volumeSlider = document.getElementById('volume');
+    const songListElement = document.getElementById('songList');
+    const songNameElement = document.getElementById('songName');
+    const progressBar = document.getElementById('progressBar');
+    const progressContainer = document.getElementById('progressContainer');
+    const visualization = document.getElementById('visualization');
+
+    const state = {
+        mute: false,
+        shuffle: false,
+        shuffleOrder: [],
+        selectedSongNumber: 0,
+        selectedShuffleSongIndex: 0,
+    }
+
+    playButton.onclick = play;
+    pauseButton.onclick = pause;
+    previousButton.onclick = playPreviousSong;
+    nextButton.onclick = playNextSong;
+    muteButton.onclick = toggleMute;
+    shuffleButton.onclick = toggleShuffle;
+
+    audioElement.onended = playNextSong;
+
+    progressContainer.onclick = (event) => {
+        const box = progressContainer.getBoundingClientRect();
+        setAudioTime((event.x - box.left) / box.width);
+    }
+
+    function play() {
+        audioElement.play();
+        playButton.classList.add('hidden');
+        pauseButton.classList.remove('hidden');
+    }
+
+    function pause() {
+        audioElement.pause();
+        pauseButton.classList.add('hidden');
+        playButton.classList.remove('hidden');
+    }
+
+    const ACTIVE_ICON_CLASS = 'text-yellow-500';
+
+    function toggleShuffle() {
+        if (state.shuffle) {
+            state.shuffle = false;
+            shuffleButton.classList.remove(ACTIVE_ICON_CLASS);
+            resetShuffle();
+        } else {
+            state.shuffle = true;
+            shuffleButton.classList.add(ACTIVE_ICON_CLASS);
+        }
+    }
+
+    function resetShuffle() {
+        state.shuffleOrder = [];
+        state.selectedShuffleSongIndex = 0;
+    }
+
+    function generateShuffleArray() {
+        const shuffleArray = [];
+        const sourceArray = songs.map((song, index) => index);
+
+        while (sourceArray.length > 0) {
+            const randomIndex = Math.floor(Math.random() * sourceArray.length);
+
+            shuffleArray.push(sourceArray[randomIndex]);
+            sourceArray.splice(randomIndex, 1);
+        }
+
+        return shuffleArray;
+    }
+
+    // Music found at freemusicarchive.org is licensed under a creative commons license
+    // https://creativecommons.org/licenses/by-sa/3.0/us/
+    const songs = [
+        {
+            name: 'Sláinte - Mairi\'s Wedding',
+            path: 'audio/Sláinte - Mairi\'s Wedding.mp3'
+        },
+        {
+            name: 'Sláinte - Banish',
+            path: 'audio/Sláinte - Banish.mp3'
+        },
+        {
+            name: 'Oak Ash and Thorn - Geordie',
+            path: 'audio/Oak Ash and Thorn - Geordie.mp3'
+        },
+        {
+            name: 'Advent Chamber Orchestra - Handel - Entrance to the Queen of Sheba for Two Oboes, Strings, and Continuo allegro',
+            path: 'audio/Advent Chamber Orchestra - Handel - Entrance to the Queen of Sheba for Two Oboes%2C Strings%2C and Continuo allegro.mp3'
+        },
+        {
+            name: 'Advent Chamber Orchestra - Vivaldi - Credo Crucifixus',
+            path: 'audio/Advent Chamber Orchestra - Vivaldi - Credo Crucifixus.mp3'
+        },
+        {
+            name: 'John Harrison with the Wichita State University Chamber Players - Vivaldi - Winter Mvt 2 Largo',
+            path: 'audio/John Harrison with the Wichita State University Chamber Players - Winter Mvt 2 Largo.mp3'
+        }
+    ];
+
+    function populateSongList() {
+        songs.forEach((song, songNumber) => {
+            const songElement = document.createElement('div');
+            songElement.textContent = song.name;
+            const songClasses = 'cursor-pointer px-9 py-3 hover:bg-blue-200 transition-colors ease-in-out duration-300 rounded-2xl bg-opacity-30';
+            songElement.classList.add(...songClasses.split(' '));
+            songElement.dataset.songNumber = songNumber.toString();
+
+            songListElement.append(songElement);
+
+            songElement.onclick = () => {
+                playBeep();
+                setSong(songNumber);
+                play();
+            }
+        });
+    }
+
+    function setSong(songNumber) {
+        const SELECTED_SONG_CLASS = 'bg-yellow-500'
+
+        songListElement.childNodes.forEach(songElement => {
+            if (songElement.dataset.songNumber === songNumber.toString()) {
+                songElement.classList.add(SELECTED_SONG_CLASS);
+            } else {
+                songElement.classList.remove(SELECTED_SONG_CLASS);
+            }
+        });
+
+        state.selectedSongNumber = songNumber;
+        audioElement.src = songs[songNumber].path;
+        songNameElement.textContent = songs[songNumber].name;
+
+        setSongNameFontSize();
+    }
+
+    const fontSizeClasses = [
+        'text-3xl',
+        'text-2xl',
+        'text-xl',
+        'text-lg',
+        'text-base',
+        'text-sm',
+        'text-xs',
+    ];
+
+    function setSongNameFontSize() {
+        for (let className of fontSizeClasses) {
+            songNameElement.classList.remove(className);
+        }
+
+        songNameElement.classList.add(fontSizeClasses[0]);
+
+        let i = 0;
+        while (songNameElement.offsetWidth < songNameElement.scrollWidth && i < fontSizeClasses.length - 1) {
+            songNameElement.classList.remove(fontSizeClasses[i]);
+            i++;
+            songNameElement.classList.add(fontSizeClasses[i]);
+        }
+    }
+
+    function setShuffleSong(shuffleSongIndex) {
+        if (shuffleSongIndex >= state.shuffleOrder.length) {
+            state.shuffleOrder.push(...generateShuffleArray());
+        }
+
+        if (state.shuffleOrder[shuffleSongIndex] === state.selectedSongNumber) {
+            setShuffleSong(shuffleSongIndex + 1);
+            return;
+        }
+
+        state.selectedShuffleSongIndex = shuffleSongIndex;
+        setSong(state.shuffleOrder[shuffleSongIndex]);
+    }
+
+    function playNextSong() {
+        if (state.shuffle) {
+            setShuffleSong(state.selectedShuffleSongIndex + 1);
+        } else {
+            setSong((state.selectedSongNumber + 1) % songs.length);
+        }
+
+        play();
+    }
+
+    function playPreviousSong() {
+        if (state.shuffle) {
+            if (state.selectedShuffleSongIndex === 0) {
+                setShuffleSong(state.shuffleOrder.length - 1);
+            } else {
+                setShuffleSong(state.selectedShuffleSongIndex + -1);
+            }
+        } else {
+            setSong((state.selectedSongNumber - 1 + songs.length) % songs.length);
+        }
+
+        play();
+    }
+
+    const audioContext = new AudioContext();
+    const masterGain = audioContext.createGain();
+    masterGain.connect(audioContext.destination);
+    masterGain.gain.setValueAtTime(1, audioContext.currentTime);
+
+    const VOLUME_FADE_TIME_CONSTANT = 0.05;
+
+    function toggleMute() {
+        if (state.mute) {
+            state.mute = false;
+            muteButton.classList.remove(ACTIVE_ICON_CLASS);
+            masterGain.gain.setTargetAtTime(Number(volumeSlider.value) / 100, audioContext.currentTime, VOLUME_FADE_TIME_CONSTANT);
+        } else {
+            state.mute = true;
+            muteButton.classList.add(ACTIVE_ICON_CLASS);
+            masterGain.gain.setTargetAtTime(0, audioContext.currentTime, VOLUME_FADE_TIME_CONSTANT);
+        }
+    }
+
+    volumeSlider.oninput = () => {
+        masterGain.gain.setTargetAtTime(Number(volumeSlider.value) / 100, audioContext.currentTime, VOLUME_FADE_TIME_CONSTANT);
+    };
+
+    const beepDuration = 0.15;
+    const fadeTime = 0.03;
+    const minGain = 0;
+    const maxGain = 0.5;
+    const timeConstant = 0.02;
+
+    const gainNode = audioContext.createGain();
+    const oscillator = audioContext.createOscillator();
+    oscillator.connect(gainNode);
+    gainNode.connect(masterGain);
+    gainNode.gain.value = minGain;
+    oscillator.start();
+
+    function playBeep() {
+        const currentTime = audioContext.currentTime;
+
+        gainNode.gain.setValueAtTime(minGain, currentTime);
+        gainNode.gain.setTargetAtTime(maxGain, currentTime + fadeTime, timeConstant);
+        gainNode.gain.setValueAtTime(maxGain, currentTime + beepDuration - fadeTime);
+        gainNode.gain.setTargetAtTime(minGain, currentTime + beepDuration, timeConstant);
+    }
+
+    populateSongList();
+    setSong(0);
+
+    const songAudioSource = audioContext.createMediaElementSource(audioElement);
+    const analyser = audioContext.createAnalyser();
+
+    analyser.fftSize = 64;
+    const freq = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(freq);
+    songAudioSource.connect(analyser);
+    analyser.connect(masterGain);
+
+    function setProgressBar(ratio) {
+        progressBar.style.setProperty('width', `${progressContainer.clientWidth * ratio}px`);
+    }
+
+    function setAudioTime(ratio) {
+        audioElement.currentTime = ratio * audioElement.duration;
+    }
+
+    function draw() {
+        requestAnimationFrame(draw);
+
+        analyser.getByteFrequencyData(freq);
+
+        visualization.childNodes.forEach((bandElement, index) => {
+            setVisualizationBand(bandElement, freq[index] / 255);
+        });
+
+        setProgressBar(audioElement.currentTime / audioElement.duration);
+    }
+
+    const visualizationHeightRem = 10;
+
+    function setupVisualization() {
+        for (let i = 0; i < analyser.frequencyBinCount; i++) {
+            const band = document.createElement('div');
+            const bandClasses = 'h-4 w-4 rounded-full';
+            band.classList.add(...bandClasses.split(' '));
+            visualization.append(band);
+        }
+
+        visualization.style.setProperty('height', `${visualizationHeightRem}rem`);
+    }
+
+    function setVisualizationBand(bandElement, intensity) {
+        bandElement.style.setProperty('background-color', `rgba(245, 158, 11, ${intensity})`);
+        bandElement.style.setProperty('height', `${intensity * visualizationHeightRem}rem`);
+    }
+
+    setupVisualization();
+    setProgressBar(0);
+
+    draw();
+</script>
+
+</body>
+</html>
+
+<!-- todo
+load remote file
+organize code
+fix beep
+fix volume to be like YT
+make play/pause icon transition better
+-->
