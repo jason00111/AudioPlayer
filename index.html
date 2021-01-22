@@ -359,7 +359,11 @@
             songNameElement.textContent = song.name;
 
             songElement.addEventListener('click', event => {
-                setSong(event.target.dataset.songId);
+                const songElement = event.target.classList.contains('songName')
+                    ? event.target.parentElement
+                    : event.target;
+
+                setSong(songElement.dataset.songId);
                 play();
             });
 
