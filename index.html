@@ -1,21 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <!--    <base href="https://music-111.s3-us-west-2.amazonaws.com/">-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link href="styles/tailwind.min.css" rel="stylesheet">
     <!-- Favicon from https://www.freefavicon.com -->
     <link rel="shortcut icon" href="favicon.ico"/>
-    <title>Player</title>
+    <title>Audio Player</title>
+    <style>
+        #volume::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            background: #1E3A8A;
+            border-radius: 1.25rem;
+            border: 0;
+            cursor: pointer;
+            transition: all .2s ease-out;
+        }
+
+        #volume::-webkit-slider-thumb:hover {
+            transform: scale(1.25);
+            background: #F59E0B;
+        }
+
+        #volume::-moz-range-thumb {
+            width: 1.25rem;
+            height: 1.25rem;
+            background: #1E3A8A;
+            border-radius: 1.25rem;
+            border: 0;
+            cursor: pointer;
+            transition: all .2s ease-out;
+        }
+
+        #volume::-moz-range-thumb:hover {
+            transform: scale(1.25);
+            background: #F59E0B;
+        }
+    </style>
 </head>
 <body>
-<div class="m-12 p-6 max-w-screen-md bg-blue-50 rounded-3xl space-y-9">
-    <audio id="audio"></audio>
+<div class="m-9 p-6 max-w-screen-md bg-blue-50 rounded-3xl space-y-9">
+    <audio id="audio" crossorigin="anonymous"></audio>
 
     <div id="visualization" class="w-full flex justify-center items-end"></div>
 
-    <div id="songName" class="text-center h-10 text-3xl mb-9 truncate leading-10"></div>
+    <div id="songName" class="text-center h-20 text-3xl mb-9 overflow-x-scroll leading-10"></div>
 
     <div id="progressContainer" class="relative bg-blue-200 w-full rounded-full h-3.5 cursor-pointer">
         <div id="progressBar" class="bg-yellow-500 h-full rounded-full absolute top-0 left-0"></div>
@@ -31,17 +63,12 @@
                   d="M7,6 C7.55,6 8,6.45 8,7 L8,17 C8,17.55 7.55,18 7,18 C6.45,18 6,17.55 6,17 L6,7 C6,6.45 6.45,6 7,6 Z M10.66,12.82 L16.43,16.89 C17.09,17.36 18.01,16.88 18.01,16.07 L18.01,7.93 C18.01,7.12 17.1,6.65 16.43,7.11 L10.66,11.18 C10.09,11.58 10.09,12.42 10.66,12.82 Z"></path>
         </svg>
 
-        <svg id="playButton"
+        <svg id="playPauseButton"
              class="cursor-pointer hover:text-yellow-500 transform hover:scale-125 transition-all ease-out duration-200 m-4"
              width="60px" height="60px" viewBox="0 0 20 20">
-            <path transform="translate(-2, -2)"
+            <path id="playPath" transform="translate(-2, -2)"
                   d="M7,6.82 L7,17.18 C7,17.97 7.87,18.45 8.54,18.02 L16.68,12.84 C17.3,12.45 17.3,11.55 16.68,11.15 L8.54,5.98 C7.87,5.55 7,6.03 7,6.82 Z"></path>
-        </svg>
-
-        <svg id="pauseButton"
-             class="hidden cursor-pointer hover:text-yellow-500 transform hover:scale-125 transition-all ease-out duration-200 m-4"
-             width="60px" height="60px" viewBox="0 0 20 20">
-            <path transform="translate(-2, -2)"
+            <path id="pausePath" transform="translate(-2, -2)" class="hidden"
                   d="M8,19 C9.1,19 10,18.1 10,17 L10,7 C10,5.9 9.1,5 8,5 C6.9,5 6,5.9 6,7 L6,17 C6,18.1 6.9,19 8,19 Z M14,7 L14,17 C14,18.1 14.9,19 16,19 C17.1,19 18,18.1 18,17 L18,7 C18,5.9 17.1,5 16,5 C14.9,5 14,5.9 14,7 Z"></path>
         </svg>
 
@@ -54,24 +81,65 @@
 
         <svg id="shuffleButton"
              class="cursor-pointer hover:text-yellow-500 transform hover:scale-125 transition-all ease-out duration-200 m-4"
-             width="40px" height="40px" viewBox="0 0 20 20">
+             width="35px" height="35px" viewBox="0 0 20 20">
             <path transform="translate(-2, -2)"
                   d="M10.59,9.17 L6.12,4.7 C5.73,4.31 5.1,4.31 4.71,4.7 C4.32,5.09 4.32,5.72 4.71,6.11 L9.17,10.57 L10.59,9.17 Z M15.35,4.85 L16.54,6.04 L4.7,17.88 C4.31,18.27 4.31,18.9 4.7,19.29 C5.09,19.68 5.72,19.68 6.11,19.29 L17.96,7.46 L19.15,8.65 C19.46,8.96 20,8.74 20,8.29 L20,4.5 C20,4.22 19.78,4 19.5,4 L15.71,4 C15.26,4 15.04,4.54 15.35,4.85 Z M14.83,13.41 L13.42,14.82 L16.55,17.95 L15.35,19.15 C15.04,19.46 15.26,20 15.71,20 L19.5,20 C19.78,20 20,19.78 20,19.5 L20,15.71 C20,15.26 19.46,15.04 19.15,15.36 L17.96,16.55 L14.83,13.41 Z"></path>
         </svg>
 
-        <svg id="muteButton"
+        <svg id="volumeIcon"
              class="cursor-pointer hover:text-yellow-500 transform hover:scale-125 transition-all ease-out duration-200 m-4"
-             width="40px" height="40px" viewBox="0 0 20 20">
-            <path transform="translate(-2, -2)"
+             width="35px" height="35px" viewBox="0 0 20 20">
+            <path id="volumeMutePath" transform="translate(-2, -2)" class="hidden"
                   d="M3.63,3.63 C3.24,4.02 3.24,4.65 3.63,5.04 L7.29,8.7 L7,9 L4,9 C3.45,9 3,9.45 3,10 L3,14 C3,14.55 3.45,15 4,15 L7,15 L10.29,18.29 C10.92,18.92 12,18.47 12,17.58 L12,13.41 L16.18,17.59 C15.69,17.96 15.16,18.27 14.58,18.5 C14.22,18.65 14,19.03 14,19.42 C14,20.14 14.73,20.6 15.39,20.33 C16.19,20 16.94,19.56 17.61,19.02 L18.95,20.36 C19.34,20.75 19.97,20.75 20.36,20.36 C20.75,19.97 20.75,19.34 20.36,18.95 L5.05,3.63 C4.66,3.24 4.03,3.24 3.63,3.63 Z M19,12 C19,12.82 18.85,13.61 18.59,14.34 L20.12,15.87 C20.68,14.7 21,13.39 21,12 C21,8.17 18.6,4.89 15.22,3.6 C14.63,3.37 14,3.83 14,4.46 L14,4.65 C14,5.03 14.25,5.36 14.61,5.5 C17.18,6.54 19,9.06 19,12 Z M10.29,5.71 L10.12,5.88 L12,7.76 L12,6.41 C12,5.52 10.92,5.08 10.29,5.71 Z M16.5,12 C16.5,10.23 15.48,8.71 14,7.97 L14,9.76 L16.48,12.24 C16.49,12.16 16.5,12.08 16.5,12 Z"></path>
+            <path id="volumeHalfPath" transform="translate(-4, -2)" class="hidden"
+                  d="M18.5,12 C18.5,10.23 17.48,8.71 16,7.97 L16,16.02 C17.48,15.29 18.5,13.77 18.5,12 Z M5,10 L5,14 C5,14.55 5.45,15 6,15 L9,15 L12.29,18.29 C12.92,18.92 14,18.47 14,17.58 L14,6.41 C14,5.52 12.92,5.07 12.29,5.7 L9,9 L6,9 C5.45,9 5,9.45 5,10 Z"></path>
+            <path id="volumeFullPath" transform="translate(-2, -2)"
+                  d="M3,10 L3,14 C3,14.55 3.45,15 4,15 L7,15 L10.29,18.29 C10.92,18.92 12,18.47 12,17.58 L12,6.41 C12,5.52 10.92,5.07 10.29,5.7 L7,9 L4,9 C3.45,9 3,9.45 3,10 Z M16.5,12 C16.5,10.23 15.48,8.71 14,7.97 L14,16.02 C15.48,15.29 16.5,13.77 16.5,12 Z M14,4.45 L14,4.65 C14,5.03 14.25,5.36 14.6,5.5 C17.18,6.53 19,9.06 19,12 C19,14.94 17.18,17.47 14.6,18.5 C14.24,18.64 14,18.97 14,19.35 L14,19.55 C14,20.18 14.63,20.62 15.21,20.4 C18.6,19.11 21,15.84 21,12 C21,8.16 18.6,4.89 15.21,3.6 C14.63,3.37 14,3.82 14,4.45 Z"></path>
         </svg>
 
-        <input type="range" id="volume" value="100" min="0" max="150" step="1"
-               class="w-40 cursor-pointer outline-none m-6">
+        <input type="range" id="volume" value="1.0" min="0" max="1.5" step="0.01"
+               class="w-40 cursor-pointer outline-none my-6 appearance-none bg-blue-200 h-2 rounded-full">
 
     </div>
 
     <div id="songList" class="divide-y"></div>
+
+    <div id="songTemplate"
+         class="hidden cursor-pointer px-9 py-3 hover:bg-blue-200 transition-all ease-in-out duration-300 rounded-2xl bg-opacity-30 flex justify-between items-center">
+        <div class="songName">
+            Song Name
+        </div>
+        <div class="songControls flex items-center">
+            <div class="removeButton px-3 py-1.5 mx-1 bg-blue-200 rounded-full transition-all ease-in-out duration-300 text-xs hover:bg-yellow-500">
+                REMOVE
+            </div>
+            <div class="moveUpButton px-3 py-1.5 mx-1 bg-blue-200 rounded-full transition-all ease-in-out duration-300 text-xs hover:bg-yellow-500">
+                UP
+            </div>
+            <div class="moveDownButton px-3 py-1.5 mx-1 bg-blue-200 rounded-full transition-all ease-in-out duration-300 text-xs hover:bg-yellow-500">
+                DOWN
+            </div>
+        </div>
+    </div>
+
+    <div class="px-9 py-3 space-y-2">
+        <div class="flex flex-wrap items-center">
+            <div class="pr-3">
+                Add file:
+            </div>
+            <input id="addSongUrl" type="text" placeholder="url" class="rounded-full px-3 py-1.5 mx-1 outline-none">
+            <input id="addSongName" type="text" placeholder="name" class="rounded-full px-3 py-1.5 mx-1 outline-none">
+            <button id="addSongButton"
+                    class="px-3 py-1.5 mx-1 bg-blue-200 rounded-full transition-all ease-in-out duration-300 text-xs hover:bg-yellow-500">
+                ADD
+            </button>
+        </div>
+        <div class="text-xs opacity-50">
+            <p>The hosting server must allow cross-origin resource sharing.</p>
+            <p>The <a href="https://archive.org/details/audio" target="_blank" class="text-blue-700">Internet
+                Archive</a>, for example, is a good source of audio files.</p>
+        </div>
+    </div>
 </div>
 
 <div class="text-xs m-12 p-6 max-w-screen-md space-y-2 text-center">
@@ -97,55 +165,129 @@
     </p>
 </div>
 <script>
+    // Music found at freemusicarchive.org is licensed under a creative commons license
+    // https://creativecommons.org/licenses/by-sa/3.0/us/
+    const songs = [
+        {
+            name: 'Sláinte - Mairi\'s Wedding',
+            path: 'audio/Sláinte - Mairi\'s Wedding.mp3',
+            id: generateId(),
+        },
+        {
+            name: 'Sláinte - Banish',
+            path: 'audio/Sláinte - Banish.mp3',
+            id: generateId(),
+        },
+        {
+            name: 'Oak Ash and Thorn - Geordie',
+            path: 'audio/Oak Ash and Thorn - Geordie.mp3',
+            id: generateId(),
+        },
+        {
+            name: 'Advent Chamber Orchestra - Handel - Entrance to the Queen of Sheba for Two Oboes, Strings, and Continuo allegro',
+            path: 'audio/Advent Chamber Orchestra - Handel - Entrance to the Queen of Sheba for Two Oboes%2C Strings%2C and Continuo allegro.mp3',
+            id: generateId(),
+        },
+        {
+            name: 'Advent Chamber Orchestra - Vivaldi - Credo Crucifixus',
+            path: 'audio/Advent Chamber Orchestra - Vivaldi - Credo Crucifixus.mp3',
+            id: generateId(),
+        },
+        {
+            name: 'John Harrison with the Wichita State University Chamber Players - Vivaldi - Winter Mvt 2 Largo',
+            path: 'audio/John Harrison with the Wichita State University Chamber Players - Winter Mvt 2 Largo.mp3',
+            id: generateId(),
+        }
+    ];
+
+    const ACTIVE_ICON_CLASS = 'text-yellow-500';
+    const VOLUME_FADE_TIME_CONSTANT = 0.05;
+
     const audioElement = document.getElementById('audio');
-    const playButton = document.getElementById('playButton');
-    const pauseButton = document.getElementById('pauseButton');
+    const playPauseButton = document.getElementById('playPauseButton');
+    const playPath = document.getElementById('playPath');
+    const pausePath = document.getElementById('pausePath');
     const previousButton = document.getElementById('previousButton');
     const nextButton = document.getElementById('nextButton');
-    const muteButton = document.getElementById('muteButton');
+    const volumeIcon = document.getElementById('volumeIcon');
     const shuffleButton = document.getElementById('shuffleButton');
     const volumeSlider = document.getElementById('volume');
+    const volumeMutePath = document.getElementById('volumeMutePath');
+    const volumeHalfPath = document.getElementById('volumeHalfPath');
+    const volumeFullPath = document.getElementById('volumeFullPath');
     const songListElement = document.getElementById('songList');
+    const songTemplateElement = document.getElementById('songTemplate');
     const songNameElement = document.getElementById('songName');
-    const progressBar = document.getElementById('progressBar');
     const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
     const visualization = document.getElementById('visualization');
+    const addSongUrl = document.getElementById('addSongUrl');
+    const addSongName = document.getElementById('addSongName');
+    const addSongButton = document.getElementById('addSongButton');
+
+    const audioContext = new AudioContext();
+    const masterGain = audioContext.createGain();
+    masterGain.connect(audioContext.destination);
 
     const state = {
+        playing: false,
         mute: false,
+        volume: 1,
         shuffle: false,
         shuffleOrder: [],
-        selectedSongNumber: 0,
+        selectedSongId: undefined,
         selectedShuffleSongIndex: 0,
+        volumeIcon: undefined,
     }
 
-    playButton.onclick = play;
-    pauseButton.onclick = pause;
-    previousButton.onclick = playPreviousSong;
-    nextButton.onclick = playNextSong;
-    muteButton.onclick = toggleMute;
-    shuffleButton.onclick = toggleShuffle;
 
-    audioElement.onended = playNextSong;
+    /*
+     *  Setup Controls
+     */
 
-    progressContainer.onclick = (event) => {
-        const box = progressContainer.getBoundingClientRect();
-        setAudioTime((event.x - box.left) / box.width);
+    playPauseButton.addEventListener('click', togglePlay);
+    previousButton.addEventListener('click', playPreviousSong);
+    nextButton.addEventListener('click', playNextSong);
+    volumeIcon.addEventListener('click', toggleMute);
+    shuffleButton.addEventListener('click', toggleShuffle);
+    volumeSlider.addEventListener('input', setVolume);
+    progressContainer.addEventListener('click', handleProgressClick);
+    audioElement.addEventListener('ended', playNextSong);
+    addSongButton.addEventListener('click', addSong);
+
+    [
+        playPauseButton,
+        previousButton,
+        nextButton,
+        volumeIcon,
+        shuffleButton,
+        progressContainer,
+        songTemplateElement,
+    ].forEach(button => button.addEventListener('click', playClick));
+
+    function togglePlay() {
+        if (state.playing) {
+            pause();
+        } else {
+            play();
+        }
     }
 
     function play() {
+        state.playing = true;
         audioElement.play();
-        playButton.classList.add('hidden');
-        pauseButton.classList.remove('hidden');
+
+        playPath.classList.add('hidden');
+        pausePath.classList.remove('hidden');
     }
 
     function pause() {
+        state.playing = false;
         audioElement.pause();
-        pauseButton.classList.add('hidden');
-        playButton.classList.remove('hidden');
-    }
 
-    const ACTIVE_ICON_CLASS = 'text-yellow-500';
+        pausePath.classList.add('hidden');
+        playPath.classList.remove('hidden');
+    }
 
     function toggleShuffle() {
         if (state.shuffle) {
@@ -177,94 +319,124 @@
         return shuffleArray;
     }
 
-    // Music found at freemusicarchive.org is licensed under a creative commons license
-    // https://creativecommons.org/licenses/by-sa/3.0/us/
-    const songs = [
-        {
-            name: 'Sláinte - Mairi\'s Wedding',
-            path: 'audio/Sláinte - Mairi\'s Wedding.mp3'
-        },
-        {
-            name: 'Sláinte - Banish',
-            path: 'audio/Sláinte - Banish.mp3'
-        },
-        {
-            name: 'Oak Ash and Thorn - Geordie',
-            path: 'audio/Oak Ash and Thorn - Geordie.mp3'
-        },
-        {
-            name: 'Advent Chamber Orchestra - Handel - Entrance to the Queen of Sheba for Two Oboes, Strings, and Continuo allegro',
-            path: 'audio/Advent Chamber Orchestra - Handel - Entrance to the Queen of Sheba for Two Oboes%2C Strings%2C and Continuo allegro.mp3'
-        },
-        {
-            name: 'Advent Chamber Orchestra - Vivaldi - Credo Crucifixus',
-            path: 'audio/Advent Chamber Orchestra - Vivaldi - Credo Crucifixus.mp3'
-        },
-        {
-            name: 'John Harrison with the Wichita State University Chamber Players - Vivaldi - Winter Mvt 2 Largo',
-            path: 'audio/John Harrison with the Wichita State University Chamber Players - Winter Mvt 2 Largo.mp3'
-        }
-    ];
+    function handleProgressClick(event) {
+        const box = progressContainer.getBoundingClientRect();
 
-    function populateSongList() {
-        songs.forEach((song, songNumber) => {
-            const songElement = document.createElement('div');
-            songElement.textContent = song.name;
-            const songClasses = 'cursor-pointer px-9 py-3 hover:bg-blue-200 transition-colors ease-in-out duration-300 rounded-2xl bg-opacity-30';
-            songElement.classList.add(...songClasses.split(' '));
-            songElement.dataset.songNumber = songNumber.toString();
-
-            songListElement.append(songElement);
-
-            songElement.onclick = () => {
-                playBeep();
-                setSong(songNumber);
-                play();
-            }
-        });
+        audioElement.currentTime = ((event.x - box.left) / box.width) * audioElement.duration;
     }
 
-    function setSong(songNumber) {
-        const SELECTED_SONG_CLASS = 'bg-yellow-500'
+    function addSong() {
+        songs.push({
+            path: addSongUrl.value,
+            name: addSongName.value,
+            id: generateId(),
+        });
+
+        populateSongList();
+
+        addSongUrl.value = '';
+        addSongName.value = '';
+    }
+
+    function generateId() {
+        return Math.floor(Math.random() * 1e16).toString();
+    }
+
+    function populateSongList() {
+        while (songListElement.firstChild) {
+            songListElement.removeChild(songListElement.firstChild);
+        }
+
+        songs.forEach((song) => {
+            const songElement = songTemplateElement.cloneNode(true);
+            const songNameElement = songElement.getElementsByClassName('songName')[0];
+            const removeButton = songElement.getElementsByClassName('removeButton')[0];
+            const moveUpButton = songElement.getElementsByClassName('moveUpButton')[0];
+            const moveDownButton = songElement.getElementsByClassName('moveDownButton')[0];
+
+            songElement.dataset.songId = song.id;
+            songElement.classList.remove('hidden');
+            songNameElement.textContent = song.name;
+
+            songElement.addEventListener('click', event => {
+                setSong(event.target.dataset.songId);
+                play();
+            });
+
+            removeButton.addEventListener('click', event => {
+                event.stopPropagation();
+                removeSong(event.target.parentElement.parentElement.dataset.songId);
+            });
+
+            moveUpButton.addEventListener('click', event => {
+                event.stopPropagation();
+                moveSongUp(event.target.parentElement.parentElement.dataset.songId);
+            });
+
+            moveDownButton.addEventListener('click', event => {
+                event.stopPropagation();
+                moveSongDown(event.target.parentElement.parentElement.dataset.songId);
+            });
+
+            [
+                removeButton,
+                moveUpButton,
+                moveDownButton,
+            ].forEach(button => button.addEventListener('click', playClick));
+
+            songListElement.append(songElement);
+        });
+
+        highlightSelectedSong();
+    }
+
+    function removeSong(songId) {
+        const songIndex = songs.findIndex(song => song.id === songId);
+        songs.splice(songIndex, 1);
+        populateSongList();
+    }
+
+    function moveSongUp(songId) {
+        const songIndex = songs.findIndex(song => song.id === songId);
+
+        const newSongIndex = songIndex === 0 ? songs.length - 1 : songIndex - 1;
+
+        const [removedSong] = songs.splice(songIndex, 1);
+        songs.splice(newSongIndex, 0, removedSong);
+
+        populateSongList();
+    }
+
+    function moveSongDown(songId) {
+        const songIndex = songs.findIndex(song => song.id === songId);
+
+        const newSongIndex = (songIndex + 1) % songs.length;
+
+        const [removedSong] = songs.splice(songIndex, 1);
+        songs.splice(newSongIndex, 0, removedSong);
+
+        populateSongList();
+    }
+
+    function setSong(songId) {
+        const song = songs.find(song => song.id === songId);
+
+        state.selectedSongId = songId;
+        audioElement.src = song.path;
+        songNameElement.textContent = song.name;
+        highlightSelectedSong();
+    }
+
+    function highlightSelectedSong() {
+        const SELECTED_SONG_CLASS = 'bg-yellow-500';
 
         songListElement.childNodes.forEach(songElement => {
-            if (songElement.dataset.songNumber === songNumber.toString()) {
+            if (songElement.dataset.songId === state.selectedSongId) {
                 songElement.classList.add(SELECTED_SONG_CLASS);
             } else {
                 songElement.classList.remove(SELECTED_SONG_CLASS);
             }
         });
-
-        state.selectedSongNumber = songNumber;
-        audioElement.src = songs[songNumber].path;
-        songNameElement.textContent = songs[songNumber].name;
-
-        setSongNameFontSize();
-    }
-
-    const fontSizeClasses = [
-        'text-3xl',
-        'text-2xl',
-        'text-xl',
-        'text-lg',
-        'text-base',
-        'text-sm',
-        'text-xs',
-    ];
-
-    function setSongNameFontSize() {
-        for (let className of fontSizeClasses) {
-            songNameElement.classList.remove(className);
-        }
-
-        songNameElement.classList.add(fontSizeClasses[0]);
-
-        let i = 0;
-        while (songNameElement.offsetWidth < songNameElement.scrollWidth && i < fontSizeClasses.length - 1) {
-            songNameElement.classList.remove(fontSizeClasses[i]);
-            i++;
-            songNameElement.classList.add(fontSizeClasses[i]);
-        }
     }
 
     function setShuffleSong(shuffleSongIndex) {
@@ -285,7 +457,10 @@
         if (state.shuffle) {
             setShuffleSong(state.selectedShuffleSongIndex + 1);
         } else {
-            setSong((state.selectedSongNumber + 1) % songs.length);
+            const selectedSongIndex = songs.findIndex(song => song.id === state.selectedSongId);
+            const newSongIndex = (selectedSongIndex + 1) % songs.length;
+
+            setSong(songs[newSongIndex].id);
         }
 
         play();
@@ -299,90 +474,146 @@
                 setShuffleSong(state.selectedShuffleSongIndex + -1);
             }
         } else {
-            setSong((state.selectedSongNumber - 1 + songs.length) % songs.length);
+            const selectedSongIndex = songs.findIndex(song => song.id === state.selectedSongId);
+            const newSongIndex = (selectedSongIndex - 1 + songs.length) % songs.length;
+
+            setSong(songs[newSongIndex].id);
         }
 
         play();
     }
 
-    const audioContext = new AudioContext();
-    const masterGain = audioContext.createGain();
-    masterGain.connect(audioContext.destination);
-    masterGain.gain.setValueAtTime(1, audioContext.currentTime);
-
-    const VOLUME_FADE_TIME_CONSTANT = 0.05;
-
     function toggleMute() {
         if (state.mute) {
             state.mute = false;
-            muteButton.classList.remove(ACTIVE_ICON_CLASS);
-            masterGain.gain.setTargetAtTime(Number(volumeSlider.value) / 100, audioContext.currentTime, VOLUME_FADE_TIME_CONSTANT);
+
+            if (state.volume === 0) {
+                state.volume = 0.2;
+            }
+
+            masterGain.gain.setTargetAtTime(state.volume, audioContext.currentTime, VOLUME_FADE_TIME_CONSTANT);
+            volumeSlider.value = state.volume.toString();
+            setVolumeIcon(state.volume);
         } else {
             state.mute = true;
-            muteButton.classList.add(ACTIVE_ICON_CLASS);
             masterGain.gain.setTargetAtTime(0, audioContext.currentTime, VOLUME_FADE_TIME_CONSTANT);
+            volumeSlider.value = '0';
+            setVolumeIcon(0);
         }
     }
 
-    volumeSlider.oninput = () => {
-        masterGain.gain.setTargetAtTime(Number(volumeSlider.value) / 100, audioContext.currentTime, VOLUME_FADE_TIME_CONSTANT);
-    };
+    function setVolume() {
+        state.volume = Number(volumeSlider.value);
 
-    const beepDuration = 0.15;
-    const fadeTime = 0.03;
-    const minGain = 0;
-    const maxGain = 0.5;
-    const timeConstant = 0.02;
+        masterGain.gain.setTargetAtTime(state.volume, audioContext.currentTime, VOLUME_FADE_TIME_CONSTANT);
 
-    const gainNode = audioContext.createGain();
-    const oscillator = audioContext.createOscillator();
-    oscillator.connect(gainNode);
-    gainNode.connect(masterGain);
-    gainNode.gain.value = minGain;
-    oscillator.start();
+        setVolumeIcon(state.volume);
 
-    function playBeep() {
-        const currentTime = audioContext.currentTime;
-
-        gainNode.gain.setValueAtTime(minGain, currentTime);
-        gainNode.gain.setTargetAtTime(maxGain, currentTime + fadeTime, timeConstant);
-        gainNode.gain.setValueAtTime(maxGain, currentTime + beepDuration - fadeTime);
-        gainNode.gain.setTargetAtTime(minGain, currentTime + beepDuration, timeConstant);
+        if (state.volume === 0) {
+            state.mute = true;
+        } else {
+            state.mute = false;
+        }
     }
 
-    populateSongList();
-    setSong(0);
+    function setVolumeIcon(volume) {
+        const normalizedVolume = volume / Number(volumeSlider.max);
+
+        if (normalizedVolume > 0.5) {
+            if (state.volumeIcon !== 0) {
+                state.volumeIcon = 0;
+                volumeMutePath.classList.add('hidden');
+                volumeHalfPath.classList.add('hidden');
+                volumeFullPath.classList.remove('hidden');
+            }
+        } else if (normalizedVolume > 0) {
+            if (state.volumeIcon !== 1) {
+                state.volumeIcon = 1;
+                volumeMutePath.classList.add('hidden');
+                volumeHalfPath.classList.remove('hidden');
+                volumeFullPath.classList.add('hidden');
+            }
+        } else {
+            if (state.volumeIcon !== 2) {
+                state.volumeIcon = 2;
+                volumeMutePath.classList.remove('hidden');
+                volumeHalfPath.classList.add('hidden');
+                volumeFullPath.classList.add('hidden');
+            }
+        }
+    }
+
+
+    /*
+     *  Click sound
+     */
+
+    const clickDuration = 0.01;
+    const clickAttackConstant = 0.001;
+    const clickReleaseConstant = 0.01;
+    const clickMinGain = 0;
+    const clickMaxGain = 3.5;
+
+    const clickFilter = audioContext.createBiquadFilter();
+    const clickGain = audioContext.createGain();
+    clickFilter.connect(clickGain);
+    clickGain.connect(masterGain);
+
+    clickFilter.type = 'bandpass';
+    clickFilter.frequency.value = 2640;
+    clickFilter.Q.value = 12;
+
+    clickGain.gain.value = clickMinGain;
+
+    function playClick() {
+        const buffer = audioContext.createBuffer(1, 0.2 * audioContext.sampleRate, audioContext.sampleRate);
+        const bufferData = buffer.getChannelData(0);
+        for (let i = 0; i < buffer.length; i++) {
+            bufferData[i] = Math.random() * 2 - 1;
+        }
+
+        const bufferSource = audioContext.createBufferSource();
+        bufferSource.buffer = buffer;
+
+        bufferSource.connect(clickFilter);
+        // bufferSource.connect(clickGain);
+        bufferSource.start();
+
+        const currentTime = audioContext.currentTime;
+
+        clickGain.gain.setValueAtTime(clickMinGain, currentTime);
+        clickGain.gain.setTargetAtTime(clickMaxGain, currentTime, clickAttackConstant);
+        clickGain.gain.setValueAtTime(clickMaxGain, currentTime + clickDuration);
+        clickGain.gain.setTargetAtTime(clickMinGain, currentTime + clickDuration, clickReleaseConstant);
+    }
+
+
+    /*
+     *  Audio Visualization
+     */
+
+    const VISUALIZATION_HEIGHT_REM = 10;
 
     const songAudioSource = audioContext.createMediaElementSource(audioElement);
     const analyser = audioContext.createAnalyser();
-
-    analyser.fftSize = 64;
-    const freq = new Uint8Array(analyser.frequencyBinCount);
-    analyser.getByteFrequencyData(freq);
     songAudioSource.connect(analyser);
     analyser.connect(masterGain);
 
-    function setProgressBar(ratio) {
-        progressBar.style.setProperty('width', `${progressContainer.clientWidth * ratio}px`);
-    }
-
-    function setAudioTime(ratio) {
-        audioElement.currentTime = ratio * audioElement.duration;
-    }
+    analyser.fftSize = 64;
+    const freqData = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(freqData);
 
     function draw() {
         requestAnimationFrame(draw);
 
-        analyser.getByteFrequencyData(freq);
+        analyser.getByteFrequencyData(freqData);
 
         visualization.childNodes.forEach((bandElement, index) => {
-            setVisualizationBand(bandElement, freq[index] / 255);
+            setVisualizationBand(bandElement, freqData[index] / 255);
         });
 
         setProgressBar(audioElement.currentTime / audioElement.duration);
     }
-
-    const visualizationHeightRem = 10;
 
     function setupVisualization() {
         for (let i = 0; i < analyser.frequencyBinCount; i++) {
@@ -392,27 +623,45 @@
             visualization.append(band);
         }
 
-        visualization.style.setProperty('height', `${visualizationHeightRem}rem`);
+        visualization.style.setProperty('height', `${VISUALIZATION_HEIGHT_REM}rem`);
     }
 
     function setVisualizationBand(bandElement, intensity) {
         bandElement.style.setProperty('background-color', `rgba(245, 158, 11, ${intensity})`);
-        bandElement.style.setProperty('height', `${intensity * visualizationHeightRem}rem`);
+        bandElement.style.setProperty('height', `${intensity * VISUALIZATION_HEIGHT_REM}rem`);
     }
 
-    setupVisualization();
-    setProgressBar(0);
+    function setProgressBar(ratio) {
+        progressBar.style.setProperty('width', `${progressContainer.clientWidth * ratio}px`);
+    }
 
-    draw();
+
+    /*
+     *  Get Things Started
+     */
+
+    function initialize() {
+        setSong(songs[0].id);
+        populateSongList();
+        setupVisualization();
+        setProgressBar(0);
+        setVolume();
+        draw();
+    }
+
+    initialize();
 </script>
 
 </body>
 </html>
 
 <!-- todo
-load remote file
-organize code
-fix beep
-fix volume to be like YT
-make play/pause icon transition better
+improve click sound
+show alt text for buttons?
+debug order changes and add/remove for playback and shuffle behavior
+add up/down icons
+debug
+load local files?
+get metadata from file
+split into modules
 -->
