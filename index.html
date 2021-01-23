@@ -42,9 +42,8 @@
     </style>
 </head>
 <body>
+<audio id="audio" crossorigin="anonymous"></audio>
 <div class="m-9 p-6 max-w-screen-md bg-blue-50 rounded-3xl space-y-9">
-    <audio id="audio" crossorigin="anonymous"></audio>
-
     <div id="visualization" class="w-full flex justify-center items-end"></div>
 
     <div id="songName" class="text-center h-20 text-3xl mb-9 overflow-x-scroll leading-10"></div>
@@ -124,13 +123,22 @@
 
     <div class="px-9 py-3 space-y-2">
         <div class="flex flex-wrap items-center">
-            <div class="pr-3">
+            <div class="m-1">
                 Add file:
             </div>
-            <input id="addSongUrl" type="text" placeholder="url" class="rounded-full px-3 py-1.5 mx-1 outline-none">
-            <input id="addSongName" type="text" placeholder="name" class="rounded-full px-3 py-1.5 mx-1 outline-none">
+
+            <div class="m-1">
+                <input id="addSongUrl" type="text" placeholder="url"
+                       class="w-full rounded-full px-3 py-1.5 outline-none">
+            </div>
+
+            <div class="m-1">
+                <input id="addSongName" type="text" placeholder="name"
+                       class="w-full rounded-full px-3 py-1.5 outline-none">
+            </div>
+
             <button id="addSongButton"
-                    class="px-3 py-1.5 mx-1 bg-blue-200 rounded-full transition-all ease-in-out duration-300 text-xs hover:bg-yellow-500">
+                    class="px-3 py-1.5 m-1 bg-blue-200 rounded-full transition-all ease-in-out duration-300 text-xs hover:bg-yellow-500">
                 ADD
             </button>
         </div>
@@ -157,7 +165,7 @@
         Favicon from
         <a href="https://www.freefavicon.com" target="_blank" class="text-blue-700">www.freefavicon.com</a>.
     </p>
-    <p>
+    <p class="">
         View source at
         <a href="https://github.com/jason00111" target="_blank" class="text-blue-700">
             GitHub <img alt="View source on GitHub" src="icons/GitHub-Mark-64px.png" class="h-4 inline">
@@ -234,9 +242,7 @@
         mute: false,
         volume: 1,
         shuffle: false,
-        shuffleOrder: [],
-        selectedSongId: undefined,
-        selectedShuffleSongIndex: 0,
+        playedSongs: [],
         volumeIcon: undefined,
     }
 
@@ -293,30 +299,10 @@
         if (state.shuffle) {
             state.shuffle = false;
             shuffleButton.classList.remove(ACTIVE_ICON_CLASS);
-            resetShuffle();
         } else {
             state.shuffle = true;
             shuffleButton.classList.add(ACTIVE_ICON_CLASS);
         }
-    }
-
-    function resetShuffle() {
-        state.shuffleOrder = [];
-        state.selectedShuffleSongIndex = 0;
-    }
-
-    function generateShuffleArray() {
-        const shuffleArray = [];
-        const sourceArray = songs.map((song, index) => index);
-
-        while (sourceArray.length > 0) {
-            const randomIndex = Math.floor(Math.random() * sourceArray.length);
-
-            shuffleArray.push(sourceArray[randomIndex]);
-            sourceArray.splice(randomIndex, 1);
-        }
-
-        return shuffleArray;
     }
 
     function handleProgressClick(event) {
@@ -425,7 +411,14 @@
     function setSong(songId) {
         const song = songs.find(song => song.id === songId);
 
-        state.selectedSongId = songId;
+        if (!song) {
+            console.log(`Couldn't find song ${songId}`);
+
+            playPreviouslyPlayedSong();
+            return;
+        }
+
+        state.playedSongs.push(songId);
         audioElement.src = song.path;
         songNameElement.textContent = song.name;
         highlightSelectedSong();
@@ -435,7 +428,7 @@
         const SELECTED_SONG_CLASS = 'bg-yellow-500';
 
         songListElement.childNodes.forEach(songElement => {
-            if (songElement.dataset.songId === state.selectedSongId) {
+            if (songElement.dataset.songId === state.playedSongs[state.playedSongs.length - 1]) {
                 songElement.classList.add(SELECTED_SONG_CLASS);
             } else {
                 songElement.classList.remove(SELECTED_SONG_CLASS);
@@ -443,25 +436,11 @@
         });
     }
 
-    function setShuffleSong(shuffleSongIndex) {
-        if (shuffleSongIndex >= state.shuffleOrder.length) {
-            state.shuffleOrder.push(...generateShuffleArray());
-        }
-
-        if (state.shuffleOrder[shuffleSongIndex] === state.selectedSongNumber) {
-            setShuffleSong(shuffleSongIndex + 1);
-            return;
-        }
-
-        state.selectedShuffleSongIndex = shuffleSongIndex;
-        setSong(state.shuffleOrder[shuffleSongIndex]);
-    }
-
     function playNextSong() {
         if (state.shuffle) {
-            setShuffleSong(state.selectedShuffleSongIndex + 1);
+            setSong(getNextShuffleSong());
         } else {
-            const selectedSongIndex = songs.findIndex(song => song.id === state.selectedSongId);
+            const selectedSongIndex = getSelectedSongIndex();
             const newSongIndex = (selectedSongIndex + 1) % songs.length;
 
             setSong(songs[newSongIndex].id);
@@ -470,21 +449,49 @@
         play();
     }
 
+    function getNextShuffleSong() {
+        const recentlyPlayedSongs = state.playedSongs.slice(-songs.length / 2);
+        const possibleNextSongs = songs.filter(song => !recentlyPlayedSongs.includes(song.id));
+
+        const randomIndex = Math.floor(Math.random() * possibleNextSongs.length);
+
+        return possibleNextSongs[randomIndex].id;
+    }
+
     function playPreviousSong() {
         if (state.shuffle) {
-            if (state.selectedShuffleSongIndex === 0) {
-                setShuffleSong(state.shuffleOrder.length - 1);
-            } else {
-                setShuffleSong(state.selectedShuffleSongIndex + -1);
-            }
+            playPreviouslyPlayedSong();
         } else {
-            const selectedSongIndex = songs.findIndex(song => song.id === state.selectedSongId);
-            const newSongIndex = (selectedSongIndex - 1 + songs.length) % songs.length;
-
-            setSong(songs[newSongIndex].id);
+            playPreviousSongInList();
         }
 
         play();
+    }
+
+    function playPreviouslyPlayedSong() {
+        if (state.playedSongs.length === 1) {
+            return;
+        }
+
+        const previousSongId = state.playedSongs[state.playedSongs.length - 2];
+
+        state.playedSongs.pop();
+        state.playedSongs.pop();
+
+        setSong(previousSongId);
+    }
+
+    function playPreviousSongInList() {
+        const selectedSongIndex = getSelectedSongIndex();
+        const newSongIndex = (selectedSongIndex - 1 + songs.length) % songs.length;
+
+        setSong(songs[newSongIndex].id);
+    }
+
+    function getSelectedSongIndex() {
+        return songs.findIndex(
+            song => song.id === state.playedSongs[state.playedSongs.length - 1]
+        );
     }
 
     function toggleMute() {
@@ -513,11 +520,7 @@
 
         setVolumeIcon(state.volume);
 
-        if (state.volume === 0) {
-            state.mute = true;
-        } else {
-            state.mute = false;
-        }
+        state.mute = state.volume === 0;
     }
 
     function setVolumeIcon(volume) {
@@ -664,8 +667,9 @@ improve click sound
 show alt text for buttons?
 debug order changes and add/remove for playback and shuffle behavior
 add up/down icons
-debug
+user testing
 load local files?
 get metadata from file
 split into modules
+change songs to object and create song list
 -->
