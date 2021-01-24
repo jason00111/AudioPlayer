@@ -98,7 +98,7 @@
     <div id="songList" class="divide-y"></div>
 
     <div id="songTemplate"
-         class="hidden cursor-pointer px-9 py-3 hover:bg-blue-200 transition-all ease-in-out duration-300 rounded-2xl bg-opacity-30 flex justify-between items-center">
+         class="song hidden cursor-pointer px-9 py-3 hover:bg-blue-200 transition-all ease-in-out duration-300 rounded-2xl bg-opacity-30 flex justify-between items-center">
         <div class="songName">
             Song Name
         </div>
@@ -352,8 +352,9 @@
             const moveUpButton = songElement.getElementsByClassName('moveUpButton')[0];
             const moveDownButton = songElement.getElementsByClassName('moveDownButton')[0];
 
-            songElement.dataset.songId = song.id;
+            songElement.id = '';
             songElement.classList.remove('hidden');
+            songElement.dataset.songId = song.id;
             songNameElement.textContent = song.name;
 
             songElement.addEventListener('click', event => {
@@ -367,17 +368,17 @@
 
             removeButton.addEventListener('click', event => {
                 event.stopPropagation();
-                removeSong(event.target.parentElement.parentElement.dataset.songId);
+                removeSong(findParentSongElement(event.target).dataset.songId);
             });
 
             moveUpButton.addEventListener('click', event => {
                 event.stopPropagation();
-                moveSongUp(event.target.parentElement.parentElement.dataset.songId);
+                moveSongUp(findParentSongElement(event.target).dataset.songId);
             });
 
             moveDownButton.addEventListener('click', event => {
                 event.stopPropagation();
-                moveSongDown(event.target.parentElement.parentElement.dataset.songId);
+                moveSongDown(findParentSongElement(event.target).dataset.songId);
             });
 
             [
@@ -392,14 +393,33 @@
         highlightSelectedSong();
     }
 
+    function findParentSongElement(element) {
+        let parent = element.parentElement;
+
+        while (!parent.classList.contains('song')) {
+            parent = parent.parentElement;
+        }
+
+        return parent;
+    }
+
     function removeSong(songId) {
         const songIndex = songs.findIndex(song => song.id === songId);
+
+        if (songIndex === -1) {
+            throw new Error(`Could not find song ${songId}`);
+        }
+
         songs.splice(songIndex, 1);
         populateSongList();
     }
 
     function moveSongUp(songId) {
         const songIndex = songs.findIndex(song => song.id === songId);
+
+        if (songIndex === -1) {
+            throw new Error(`Could not find song ${songId}`);
+        }
 
         const newSongIndex = songIndex === 0 ? songs.length - 1 : songIndex - 1;
 
@@ -411,6 +431,10 @@
 
     function moveSongDown(songId) {
         const songIndex = songs.findIndex(song => song.id === songId);
+
+        if (songIndex === -1) {
+            throw new Error(`Could not find song ${songId}`);
+        }
 
         const newSongIndex = (songIndex + 1) % songs.length;
 
@@ -680,5 +704,4 @@ show alt text for buttons? aria?
 split into modules?
 change songs to object and create song list?
 directory of songs
-!fix up/down/delete behavior
 -->
