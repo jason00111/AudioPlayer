@@ -236,6 +236,8 @@
     const addSongUrl = document.getElementById('addSongUrl');
     const addSongName = document.getElementById('addSongName');
     const addSongFromWebButton = document.getElementById('addSongFromWebButton');
+    const addSongLocalButton = document.getElementById('addSongLocalButton');
+    const localFileInput = document.getElementById('localFileInput');
 
     const audioContext = new AudioContext();
     const masterGain = audioContext.createGain();
@@ -264,6 +266,7 @@
     progressContainer.addEventListener('click', handleProgressClick);
     audioElement.addEventListener('ended', playNextSong);
     addSongFromWebButton.addEventListener('click', addSongFromWeb);
+    addSongLocalButton.addEventListener('click', addSongLocal);
 
     [
         playPauseButton,
@@ -319,7 +322,7 @@
         let name;
 
         if (addSongName.value.trim() === '') {
-            name = (new URL(addSongUrl.value)).pathname.split('/').slice(-1)[0].split('.')[0];
+            name = getFileNameFromUrl(addSongUrl.value);
         } else {
             name = addSongName.value;
         }
@@ -334,6 +337,22 @@
 
         addSongUrl.value = '';
         addSongName.value = '';
+    }
+
+    function addSongLocal() {
+        Array.from(localFileInput.files).forEach(file => {
+            songs.push({
+                id: generateId(),
+                path: URL.createObjectURL(file),
+                name: file.name.split('.')[0],
+            });
+        });
+
+        populateSongList();
+    }
+
+    function getFileNameFromUrl(url) {
+        return (new URL(url)).pathname.split('/').slice(-1)[0].split('.')[0];
     }
 
     function generateId() {
@@ -406,20 +425,12 @@
     function removeSong(songId) {
         const songIndex = songs.findIndex(song => song.id === songId);
 
-        if (songIndex === -1) {
-            throw new Error(`Could not find song ${songId}`);
-        }
-
         songs.splice(songIndex, 1);
         populateSongList();
     }
 
     function moveSongUp(songId) {
         const songIndex = songs.findIndex(song => song.id === songId);
-
-        if (songIndex === -1) {
-            throw new Error(`Could not find song ${songId}`);
-        }
 
         const newSongIndex = songIndex === 0 ? songs.length - 1 : songIndex - 1;
 
@@ -431,10 +442,6 @@
 
     function moveSongDown(songId) {
         const songIndex = songs.findIndex(song => song.id === songId);
-
-        if (songIndex === -1) {
-            throw new Error(`Could not find song ${songId}`);
-        }
 
         const newSongIndex = (songIndex + 1) % songs.length;
 
@@ -448,7 +455,7 @@
         const song = songs.find(song => song.id === songId);
 
         if (!song) {
-            console.log(`Couldn't find song ${songId}`);
+            console.log(`Could not find song ${songId}`);
 
             playPreviouslyPlayedSong();
             return;
@@ -700,7 +707,6 @@
 
 <!-- todo
 show alt text for buttons? aria?
-!load local files
 split into modules?
 change songs to object and create song list?
 directory of songs
