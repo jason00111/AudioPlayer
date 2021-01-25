@@ -95,7 +95,7 @@
 
     </div>
 
-    <div id="songList" class="divide-y"></div>
+    <div id="songList"></div>
 
     <div id="songTemplate"
          class="song hidden cursor-pointer px-9 py-3 hover:bg-blue-200 transition-all ease-in-out duration-300 rounded-2xl bg-opacity-30 flex justify-between items-center">
@@ -118,45 +118,103 @@
         </div>
     </div>
 
-    <div class="px-9 py-3 space-y-2 border-2 border-blue-200 rounded-2xl">
-        <div class="m-1">
-            Add file from web:
+    <div id="addFileContainer">
+
+        <div id="addFileTabs" class="flex">
+            <div id="webFileTabButton"
+                 class="bg-blue-200 border-t-2 border-l-2 border-r-2 border-blue-200 rounded-t-2xl px-4 py-2 mr-0.5 transition-all ease-in-out duration-300 hover:bg-blue-200 cursor-pointer">
+                Web
+            </div>
+            <div id="localFileTabButton"
+                 class="border-t-2 border-l-2 border-r-2 border-blue-200 rounded-t-2xl px-4 py-2 mx-0.5 transition-all ease-in-out duration-300 hover:bg-blue-200 cursor-pointer">
+                Your Computer
+            </div>
+            <div id="internetArchiveTabButton"
+                 class="border-t-2 border-l-2 border-r-2 border-blue-200 rounded-t-2xl px-4 py-2 mx-0.5 transition-all ease-in-out duration-300 hover:bg-blue-200 cursor-pointer">
+                Internet Archive
+            </div>
+            <div id="freeMusicArchiveTabButton"
+                 class="border-t-2 border-l-2 border-r-2 border-blue-200 rounded-t-2xl px-4 py-2 mx-0.5 transition-all ease-in-out duration-300 hover:bg-blue-200 cursor-pointer">
+                Free Music Archive
+            </div>
         </div>
-        <div class="flex flex-wrap items-center">
+
+        <div id="webFileTab"
+             class="bg-blue-200 p-3 space-y-2 border-2 border-blue-200 rounded-2xl rounded-tl-none">
             <div class="m-1">
-                <input id="addSongUrl" type="text" placeholder="url"
-                       class="w-full rounded-full px-3 py-1.5 outline-none">
+                Add file from web url:
+            </div>
+            <div class="flex flex-wrap items-center">
+                <div class="m-1">
+                    <input id="addSongUrl" type="text" placeholder="url"
+                           class="w-full rounded-full px-3 py-1.5 outline-none">
+                </div>
+
+                <div class="m-1">
+                    <input id="addSongName" type="text" placeholder="name"
+                           class="w-full rounded-full px-3 py-1.5 outline-none">
+                </div>
+
+                <button id="addSongFromWebButton"
+                        class="px-3 py-1.5 m-1 bg-blue-900 text-blue-100 rounded-full transition-all ease-in-out duration-300 text-xs hover:bg-yellow-500">
+                    ADD
+                </button>
+            </div>
+            <div class="text-xs opacity-70">
+                <p>The hosting server must allow cross-origin resource sharing.</p>
+                <p>The <a href="https://archive.org" target="_blank" class="text-blue-700">Internet
+                    Archive</a>, for example, is a good source of audio files.</p>
+            </div>
+        </div>
+
+        <div id="localFileTab"
+             class="bg-blue-200 p-3 space-y-2 border-2 border-blue-200 rounded-2xl rounded-tl-none hidden">
+            <div class="m-1">
+                Add files from your computer:
+            </div>
+            <div class="flex flex-wrap items-center">
+                <input id="localFileInput" type="file" multiple>
+
+                <button id="addSongLocalButton"
+                        class="px-3 py-1.5 m-1 bg-blue-900 text-blue-100 rounded-full transition-all ease-in-out duration-300 text-xs hover:bg-yellow-500">
+                    ADD
+                </button>
+            </div>
+        </div>
+
+        <div id="internetArchiveTab"
+             class="bg-blue-200 p-3 space-y-2 border-2 border-blue-200 rounded-2xl rounded-tl-none hidden">
+            <div class="m-1">
+                Add files from Internet Archive:
             </div>
 
-            <div class="m-1">
-                <input id="addSongName" type="text" placeholder="name"
-                       class="w-full rounded-full px-3 py-1.5 outline-none">
+            <div class="flex items-center">
+                <input id="internetArchiveSearchInput" type="text" class="rounded-full px-3 py-1.5 outline-none">
+
+                <button id="internetArchiveSearchButton"
+                        class="px-3 py-1.5 m-1 bg-blue-900 text-blue-100 rounded-full transition-all ease-in-out duration-300 text-xs hover:bg-yellow-500">
+                    SEARCH
+                </button>
             </div>
 
-            <button id="addSongFromWebButton"
-                    class="px-3 py-1.5 m-1 bg-blue-200 rounded-full transition-all ease-in-out duration-300 text-xs hover:bg-yellow-500">
-                ADD
-            </button>
-        </div>
-        <div class="text-xs opacity-50">
-            <p>The hosting server must allow cross-origin resource sharing.</p>
-            <p>The <a href="https://archive.org" target="_blank" class="text-blue-700">Internet
-                Archive</a>, for example, is a good source of audio files.</p>
-        </div>
-    </div>
+            <div id="internetArchiveList"></div>
 
-    <div class="px-9 py-3 space-y-2 border-2 border-blue-200 rounded-2xl">
-        <div class="m-1">
-            Add local files:
-        </div>
-        <div class="flex flex-wrap items-center">
-            <input id="localFileInput" type="file" multiple>
+            <div id="internetArchiveItemTemplate" class="internetArchiveItem hidden">
+                <div class="itemName p-1 cursor-pointer hover:bg-yellow-500 transition-all ease-in-out duration-300 rounded-2xl">
+                    Item Name
+                </div>
+                <div class="files hidden mx-3 border-l-2 border-blue-900"></div>
+            </div>
 
-            <button id="addSongLocalButton"
-                    class="px-3 py-1.5 m-1 bg-blue-200 rounded-full transition-all ease-in-out duration-300 text-xs hover:bg-yellow-500">
-                ADD
-            </button>
+            <div id="fileTemplate"
+                 class="file hidden mx-1 px-2 cursor-pointer hover:bg-yellow-500 transition-all ease-in-out duration-300 rounded-2xl bg-opacity-30">
+                <div class="fileName">
+                    File Name
+                </div>
+            </div>
+
         </div>
+
     </div>
 </div>
 
@@ -238,6 +296,17 @@
     const addSongFromWebButton = document.getElementById('addSongFromWebButton');
     const addSongLocalButton = document.getElementById('addSongLocalButton');
     const localFileInput = document.getElementById('localFileInput');
+    const internetArchiveList = document.getElementById('internetArchiveList');
+    const internetArchiveItemTemplate = document.getElementById('internetArchiveItemTemplate');
+    const webFileTabButton = document.getElementById('webFileTabButton');
+    const localFileTabButton = document.getElementById('localFileTabButton');
+    const internetArchiveTabButton = document.getElementById('internetArchiveTabButton');
+    const webFileTab = document.getElementById('webFileTab');
+    const localFileTab = document.getElementById('localFileTab');
+    const internetArchiveTab = document.getElementById('internetArchiveTab');
+    const internetArchiveSearchInput = document.getElementById('internetArchiveSearchInput');
+    const internetArchiveSearchButton = document.getElementById('internetArchiveSearchButton');
+    const fileTemplate = document.getElementById('fileTemplate');
 
     const audioContext = new AudioContext();
     const masterGain = audioContext.createGain();
@@ -267,6 +336,15 @@
     audioElement.addEventListener('ended', playNextSong);
     addSongFromWebButton.addEventListener('click', addSongFromWeb);
     addSongLocalButton.addEventListener('click', addSongLocal);
+    webFileTabButton.addEventListener('click', () => openTab('web'));
+    localFileTabButton.addEventListener('click', () => openTab('local'));
+    internetArchiveTabButton.addEventListener('click', () => openTab('internetArchive'));
+    internetArchiveSearchButton.addEventListener('click', searchInternetArchiveHandler);
+    internetArchiveSearchInput.addEventListener('keyup', (event) => {
+        if (event.code === '13') {
+            searchInternetArchiveHandler();
+        }
+    });
 
     [
         playPauseButton,
@@ -275,8 +353,42 @@
         volumeIcon,
         shuffleButton,
         progressContainer,
-        songTemplateElement,
+        addSongFromWebButton,
+        addSongLocalButton,
+        webFileTabButton,
+        localFileTabButton,
+        internetArchiveTabButton,
     ].forEach(button => button.addEventListener('click', playClick));
+
+    function openTab(tab) {
+        const selectedClass = 'bg-blue-200';
+
+        if (tab === 'web') {
+            webFileTab.classList.remove('hidden');
+            localFileTab.classList.add('hidden');
+            internetArchiveTab.classList.add('hidden');
+
+            webFileTabButton.classList.add(selectedClass);
+            localFileTabButton.classList.remove(selectedClass);
+            internetArchiveTabButton.classList.remove(selectedClass);
+        } else if (tab === 'local') {
+            webFileTab.classList.add('hidden');
+            localFileTab.classList.remove('hidden');
+            internetArchiveTab.classList.add('hidden');
+
+            webFileTabButton.classList.remove(selectedClass);
+            localFileTabButton.classList.add(selectedClass);
+            internetArchiveTabButton.classList.remove(selectedClass);
+        } else if (tab === 'internetArchive') {
+            webFileTab.classList.add('hidden');
+            localFileTab.classList.add('hidden');
+            internetArchiveTab.classList.remove('hidden');
+
+            webFileTabButton.classList.remove(selectedClass);
+            localFileTabButton.classList.remove(selectedClass);
+            internetArchiveTabButton.classList.add(selectedClass);
+        }
+    }
 
     function togglePlay() {
         if (state.playing) {
@@ -376,11 +488,7 @@
             songElement.dataset.songId = song.id;
             songNameElement.textContent = song.name;
 
-            songElement.addEventListener('click', event => {
-                const songElement = event.target.classList.contains('songName')
-                    ? event.target.parentElement
-                    : event.target;
-
+            songElement.addEventListener('click', () => {
                 setSong(songElement.dataset.songId);
                 play();
             });
@@ -685,6 +793,141 @@
         progressBar.style.setProperty('width', `${progressContainer.clientWidth * ratio}px`);
     }
 
+    /*
+     *  Internet Archive
+     */
+
+    function searchInternetArchiveHandler() {
+        const searchTerms = internetArchiveSearchInput.value;
+
+        searchInternetArchive(searchTerms)
+            .then(items => {
+                populateIAList(items);
+            });
+    }
+
+    function searchInternetArchive(searchTerms) {
+        const searchTermsString = searchTerms.split(' ').join('+');
+        const searchUrl = `https://archive.org/advancedsearch.php?q=format%3A%28VBR+MP3%29+${searchTermsString}&fl%5B%5D=identifier&fl%5B%5D=title&sort%5B%5D=avg_rating+desc&sort%5B%5D=reviewdate+desc&sort%5B%5D=&rows=20&page=1&output=json`;
+
+        return fetch(searchUrl)
+            .then(response => {
+                // console.log('got response');
+                return response.json();
+            })
+            .then(json => {
+                return json.response.docs;
+            });
+    }
+
+    function findIAFiles(identifier) {
+        const corsProxyPrefix = 'http://api.allorigins.win/get?url=';
+        const url = `https://ia800605.us.archive.org/29/items/${identifier}/${identifier}_files.xml`;
+
+        return fetch(corsProxyPrefix + url)
+            .then(response => {
+                // console.log('got response', response);
+                return response.json();
+            })
+            .then(json => {
+                // console.log(json);
+                const parser = new DOMParser();
+                const xml = parser.parseFromString(json.contents, 'text/xml');
+
+                const files = [];
+                for (let file of xml.getElementsByTagName('file')) {
+                    const fileName = file.getAttribute('name');
+
+                    if (fileName.endsWith('.mp3')) {
+                        files.push(fileName);
+                    }
+                }
+
+                return files;
+            });
+    }
+
+    function populateIAList(items) {
+        // console.log('items', items);
+
+        while (internetArchiveList.firstChild) {
+            internetArchiveList.removeChild(internetArchiveList.firstChild);
+        }
+
+        items.forEach((item) => {
+            const itemElement = internetArchiveItemTemplate.cloneNode(true);
+            const itemNameElement = itemElement.getElementsByClassName('itemName')[0];
+            const fileListElement = itemElement.getElementsByClassName('files')[0];
+
+            itemElement.id = '';
+            itemElement.classList.remove('hidden');
+            itemElement.dataset.itemId = item.identifier;
+            itemNameElement.textContent = item.title;
+
+            itemNameElement.addEventListener('click', () => {
+                if (fileListElement.classList.contains('hidden')) {
+                    fileListElement.classList.remove('hidden');
+
+                    if (!fileListElement.childElementCount) {
+                        findIAFiles(item.identifier)
+                            .then(files => {
+                                populateIAFiles({
+                                    itemElement,
+                                    item,
+                                    files,
+                                });
+                            });
+                    }
+                } else {
+                    fileListElement.classList.add('hidden');
+                }
+            });
+
+            [
+                itemNameElement,
+            ].forEach(button => button.addEventListener('click', playClick));
+
+            internetArchiveList.append(itemElement);
+        });
+    }
+
+
+    function populateIAFiles({itemElement, item, files}) {
+        const fileListElement = itemElement.getElementsByClassName('files')[0];
+
+        while (fileListElement.firstChild) {
+            fileListElement.removeChild(fileListElement.firstChild);
+        }
+
+        files.forEach((file) => {
+            const fileElement = fileTemplate.cloneNode(true);
+            const fileNameElement = fileElement.getElementsByClassName('fileName')[0];
+
+            fileElement.id = '';
+            fileElement.classList.remove('hidden');
+            fileNameElement.textContent = file;
+
+            fileElement.addEventListener('click', () => {
+                const url = `https://archive.org/download/${item.identifier}/${file}`;
+
+                songs.push({
+                    path: url,
+                    name: file.slice(0, -4),
+                    id: generateId(),
+                });
+
+                populateSongList();
+            });
+
+            [
+                fileElement,
+            ].forEach(button => button.addEventListener('click', playClick));
+
+            fileListElement.append(fileElement);
+        });
+    }
+
+    // https://archive.org/advancedsearch.php?q=mediatype%3A%28audio%29&fl%5B%5D=avg_rating&fl%5B%5D=backup_location&fl%5B%5D=btih&fl%5B%5D=call_number&fl%5B%5D=collection&fl%5B%5D=contributor&fl%5B%5D=coverage&fl%5B%5D=creator&fl%5B%5D=date&fl%5B%5D=description&fl%5B%5D=downloads&fl%5B%5D=external-identifier&fl%5B%5D=foldoutcount&fl%5B%5D=format&fl%5B%5D=genre&fl%5B%5D=headerImage&fl%5B%5D=identifier&fl%5B%5D=imagecount&fl%5B%5D=indexflag&fl%5B%5D=item_size&fl%5B%5D=language&fl%5B%5D=licenseurl&fl%5B%5D=mediatype&fl%5B%5D=members&fl%5B%5D=month&fl%5B%5D=name&fl%5B%5D=noindex&fl%5B%5D=num_reviews&fl%5B%5D=oai_updatedate&fl%5B%5D=publicdate&fl%5B%5D=publisher&fl%5B%5D=related-external-id&fl%5B%5D=reviewdate&fl%5B%5D=rights&fl%5B%5D=scanningcentre&fl%5B%5D=source&fl%5B%5D=stripped_tags&fl%5B%5D=subject&fl%5B%5D=title&fl%5B%5D=type&fl%5B%5D=volume&fl%5B%5D=week&fl%5B%5D=year&sort%5B%5D=avg_rating+desc&sort%5B%5D=&sort%5B%5D=&rows=5&page=1&callback=callback&output=tables
 
     /*
      *  Get Things Started
@@ -708,6 +951,9 @@
 <!-- todo
 show alt text for buttons? aria?
 split into modules?
-change songs to object and create song list?
 directory of songs
+- provide some simple recommendations
+
+handle song loading errors
+show loading animation
 -->
