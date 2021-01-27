@@ -207,20 +207,29 @@
                 <div class="itemName px-2 py-1 cursor-pointer hover:bg-yellow-500 transition-all ease-in-out duration-300 rounded-2xl">
                     Item Name
                 </div>
-                <div class="files hidden mx-5 mb-2 border-l-2 border-blue-900">
+                <div class="files hidden mb-2 fill-current">
                     <svg class="loading hidden animate-spin h-9 w-9" viewBox="0 0 24 24">
                         <path d="M18.65 8.35l-2.79 2.79c-.32.32-.1.86.35.86H18c0 3.31-2.69 6-6 6-.79 0-1.56-.15-2.25-.44-.36-.15-.77-.04-1.04.23-.51.51-.33 1.37.34 1.64.91.37 1.91.57 2.95.57 4.42 0 8-3.58 8-8h1.79c.45 0 .67-.54.35-.85l-2.79-2.79c-.19-.2-.51-.2-.7-.01zM6 12c0-3.31 2.69-6 6-6 .79 0 1.56.15 2.25.44.36.15.77.04 1.04-.23.51-.51.33-1.37-.34-1.64C14.04 4.2 13.04 4 12 4c-4.42 0-8 3.58-8 8H2.21c-.45 0-.67.54-.35.85l2.79 2.79c.2.2.51.2.71 0l2.79-2.79c.31-.31.09-.85-.36-.85H6z"></path>
                     </svg>
                 </div>
             </div>
 
-            <div id="fileTemplate"
-                 class="file hidden mx-1 px-2 cursor-pointer hover:bg-yellow-500 transition-all ease-in-out duration-300 rounded-2xl bg-opacity-30">
-                <div class="fileName">
+            <div id="fileTemplate" class="file hidden px-2 flex">
+                <div class="fileControls text-blue-900 fill-current flex justify-center items-center">
+                    <svg class="filePlayButton h-7 w-7 cursor-pointer hover:text-yellow-500 transform hover:scale-125 transition-all ease-out duration-200 mx-1"
+                         viewBox="0 0 24 24">
+                        <path d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18c.62-.39.62-1.29 0-1.69L9.54 5.98C8.87 5.55 8 6.03 8 6.82z"></path>
+                    </svg>
+
+                    <svg class="fileAddButton h-6 w-6 cursor-pointer hover:text-yellow-500 transform hover:scale-125 transition-all ease-out duration-200 mx-1"
+                         viewBox="0 0 24 24">
+                        <path d="M3 6c-.55 0-1 .45-1 1v13c0 1.1.9 2 2 2h13c.55 0 1-.45 1-1s-.45-1-1-1H5c-.55 0-1-.45-1-1V7c0-.55-.45-1-1-1zm17-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 9h-3v3c0 .55-.45 1-1 1s-1-.45-1-1v-3h-3c-.55 0-1-.45-1-1s.45-1 1-1h3V6c0-.55.45-1 1-1s1 .45 1 1v3h3c.55 0 1 .45 1 1s-.45 1-1 1z"></path>
+                    </svg>
+                </div>
+                <div class="fileName mx-2 px-2 cursor-pointer hover:bg-yellow-500 transition-all ease-in-out duration-300 rounded-2xl">
                     File Name
                 </div>
             </div>
-
         </div>
 
     </div>
@@ -350,7 +359,7 @@
     internetArchiveTabButton.addEventListener('click', () => openTab('internetArchive'));
     internetArchiveSearchButton.addEventListener('click', searchInternetArchiveHandler);
     internetArchiveSearchInput.addEventListener('keyup', (event) => {
-        if (event.code === '13') {
+        if (event.code === 'Enter') {
             searchInternetArchiveHandler();
         }
     });
@@ -367,6 +376,7 @@
         webFileTabButton,
         localFileTabButton,
         internetArchiveTabButton,
+        internetArchiveSearchButton,
     ].forEach(button => button.addEventListener('click', playClick));
 
     function openTab(tab) {
@@ -915,6 +925,12 @@
         });
     }
 
+    function playFile({url, name}) {
+        songNameElement.textContent = name;
+        audioElement.src = url;
+
+        play();
+    }
 
     function populateIAFiles({itemElement, item, files}) {
         const fileListElement = itemElement.getElementsByClassName('files')[0];
@@ -926,17 +942,30 @@
         files.forEach((file) => {
             const fileElement = fileTemplate.cloneNode(true);
             const fileNameElement = fileElement.getElementsByClassName('fileName')[0];
+            const filePlayButton = fileElement.getElementsByClassName('filePlayButton')[0];
+            const fileAddButton = fileElement.getElementsByClassName('fileAddButton')[0];
+
+            const url = `https://archive.org/download/${item.identifier}/${file}`;
+            const name = file.slice(0, -4);
 
             fileElement.id = '';
             fileElement.classList.remove('hidden');
             fileNameElement.textContent = file;
 
-            fileElement.addEventListener('click', () => {
-                const url = `https://archive.org/download/${item.identifier}/${file}`;
+            fileNameElement.addEventListener('click', () => playFile({
+                url,
+                name,
+            }));
 
+            filePlayButton.addEventListener('click', () => playFile({
+                url,
+                name,
+            }));
+
+            fileAddButton.addEventListener('click', () => {
                 songs.push({
                     path: url,
-                    name: file.slice(0, -4),
+                    name,
                     id: generateId(),
                 });
 
@@ -945,13 +974,13 @@
 
             [
                 fileElement,
+                filePlayButton,
+                fileAddButton,
             ].forEach(button => button.addEventListener('click', playClick));
 
             fileListElement.append(fileElement);
         });
     }
-
-    // https://archive.org/advancedsearch.php?q=mediatype%3A%28audio%29&fl%5B%5D=avg_rating&fl%5B%5D=backup_location&fl%5B%5D=btih&fl%5B%5D=call_number&fl%5B%5D=collection&fl%5B%5D=contributor&fl%5B%5D=coverage&fl%5B%5D=creator&fl%5B%5D=date&fl%5B%5D=description&fl%5B%5D=downloads&fl%5B%5D=external-identifier&fl%5B%5D=foldoutcount&fl%5B%5D=format&fl%5B%5D=genre&fl%5B%5D=headerImage&fl%5B%5D=identifier&fl%5B%5D=imagecount&fl%5B%5D=indexflag&fl%5B%5D=item_size&fl%5B%5D=language&fl%5B%5D=licenseurl&fl%5B%5D=mediatype&fl%5B%5D=members&fl%5B%5D=month&fl%5B%5D=name&fl%5B%5D=noindex&fl%5B%5D=num_reviews&fl%5B%5D=oai_updatedate&fl%5B%5D=publicdate&fl%5B%5D=publisher&fl%5B%5D=related-external-id&fl%5B%5D=reviewdate&fl%5B%5D=rights&fl%5B%5D=scanningcentre&fl%5B%5D=source&fl%5B%5D=stripped_tags&fl%5B%5D=subject&fl%5B%5D=title&fl%5B%5D=type&fl%5B%5D=volume&fl%5B%5D=week&fl%5B%5D=year&sort%5B%5D=avg_rating+desc&sort%5B%5D=&sort%5B%5D=&rows=5&page=1&callback=callback&output=tables
 
     /*
      *  Get Things Started
@@ -977,18 +1006,24 @@ show alt text for buttons? aria?
 split into modules?
 directory of songs
 - FMA?
-- provide some simple recommendations
+
+host cors proxy?
+
+search pages
+
+provide some simple recommendations
 
 handle song loading errors
 handle no files found
 
-play song when added?
- - little play button and add button?
-
 include files other than mp3
 
-host cors proxy?
+add buffering indicator
+add time indicator
 
-fix enter to search
-search pages
+don't play next song if song wasn't played from playlist
+
+play/add all?
+
+play button toggle on file play
 -->
