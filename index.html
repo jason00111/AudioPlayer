@@ -225,6 +225,10 @@
                         There was a problem listing files from the Internet Archive
                     </div>
 
+                    <div class="noFiles hidden">
+                        No files found
+                    </div>
+
                     <div class="files"></div>
                 </div>
             </div>
@@ -1005,9 +1009,14 @@
 
     function populateIAFiles({itemElement, item, files}) {
         const fileListElement = itemElement.getElementsByClassName('files')[0];
+        const noFilesElement = itemElement.getElementsByClassName('noFiles')[0];
 
         while (fileListElement.firstChild) {
             fileListElement.removeChild(fileListElement.firstChild);
+        }
+
+        if (!files.length) {
+            noFilesElement.classList.remove('hidden');
         }
 
         files.forEach((file) => {
@@ -1089,7 +1098,7 @@ IA search pages
 provide some simple recommendations
 - Mélomane
 
-handle no files found
+handle cors error when loading file
 
 include files other than mp3
 
