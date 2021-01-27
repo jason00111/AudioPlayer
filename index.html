@@ -47,8 +47,12 @@
 
     <div id="songName" class="text-center h-20 text-3xl mb-9 overflow-x-scroll leading-10"></div>
 
-    <div id="progressContainer" class="relative bg-blue-200 w-full rounded-full h-3.5 cursor-pointer">
-        <div id="progressBar" class="bg-yellow-500 h-full rounded-full absolute top-0 left-0"></div>
+    <div class="flex flex-col items-end">
+        <div id="progressBarContainer" class="relative bg-gray-200 w-full rounded-full h-3.5 cursor-pointer overflow-hidden">
+            <div id="progressBufferBar" class="bg-blue-200 h-full rounded-full absolute top-0 left-0"></div>
+            <div id="progressBar" class="bg-yellow-500 h-full rounded-full absolute top-0 left-0"></div>
+        </div>
+        <div id="currentTime" class="font-mono text-sm"></div>
     </div>
 
     <div id="controls" class="flex flex-wrap justify-center items-center text-blue-900 fill-current">
@@ -252,6 +256,10 @@
     </p>
 </div>
 <script>
+    const CORS_PROXY_PREFIX = 'http://api.allorigins.win/get?url=';
+    const ACTIVE_ICON_CLASS = 'text-yellow-500';
+    const VOLUME_FADE_TIME_CONSTANT = 0.05;
+
     // Music found at freemusicarchive.org is licensed under a creative commons license
     // https://creativecommons.org/licenses/by-sa/3.0/us/
     const songs = [
@@ -287,9 +295,6 @@
         }
     ];
 
-    const ACTIVE_ICON_CLASS = 'text-yellow-500';
-    const VOLUME_FADE_TIME_CONSTANT = 0.05;
-
     const audioElement = document.getElementById('audio');
     const playPauseButton = document.getElementById('playPauseButton');
     const playPath = document.getElementById('playPath');
@@ -304,9 +309,11 @@
     const volumeFullPath = document.getElementById('volumeFullPath');
     const songListElement = document.getElementById('songList');
     const songTemplateElement = document.getElementById('songTemplate');
-    const songNameElement = document.getElementById('songName');
-    const progressContainer = document.getElementById('progressContainer');
+    const mainSongNameElement = document.getElementById('songName');
+    const progressBarContainer = document.getElementById('progressBarContainer');
     const progressBar = document.getElementById('progressBar');
+    const progressBufferBar = document.getElementById('progressBufferBar');
+    const currentTimeElement = document.getElementById('currentTime');
     const visualization = document.getElementById('visualization');
     const addSongUrl = document.getElementById('addSongUrl');
     const addSongName = document.getElementById('addSongName');
@@ -350,7 +357,7 @@
     volumeIcon.addEventListener('click', toggleMute);
     shuffleButton.addEventListener('click', toggleShuffle);
     volumeSlider.addEventListener('input', setVolume);
-    progressContainer.addEventListener('click', handleProgressClick);
+    progressBarContainer.addEventListener('click', handleProgressClick);
     audioElement.addEventListener('ended', playNextSong);
     addSongFromWebButton.addEventListener('click', addSongFromWeb);
     addSongLocalButton.addEventListener('click', addSongLocal);
@@ -370,7 +377,7 @@
         nextButton,
         volumeIcon,
         shuffleButton,
-        progressContainer,
+        progressBarContainer,
         addSongFromWebButton,
         addSongLocalButton,
         webFileTabButton,
@@ -378,6 +385,12 @@
         internetArchiveTabButton,
         internetArchiveSearchButton,
     ].forEach(button => button.addEventListener('click', playClick));
+
+    audioElement.addEventListener('timeupdate', setProgressIndicator);
+    audioElement.addEventListener('timeupdate', setProgressBufferBar);
+    audioElement.addEventListener('stalled', () => {
+        console.log('stalled');
+    });
 
     function openTab(tab) {
         const selectedClass = 'bg-blue-200';
@@ -444,7 +457,7 @@
     }
 
     function handleProgressClick(event) {
-        const box = progressContainer.getBoundingClientRect();
+        const box = progressBarContainer.getBoundingClientRect();
 
         audioElement.currentTime = ((event.x - box.left) / box.width) * audioElement.duration;
     }
@@ -590,8 +603,13 @@
 
         state.playedSongs.push(songId);
         audioElement.src = song.path;
-        songNameElement.textContent = song.name;
+        setSongName(song.name);
         highlightSelectedSong();
+    }
+
+    function setSongName(name) {
+        mainSongNameElement.textContent = name;
+        document.title = name;
     }
 
     function highlightSelectedSong() {
@@ -788,8 +806,6 @@
         visualization.childNodes.forEach((bandElement, index) => {
             setVisualizationBand(bandElement, freqData[index] / 255);
         });
-
-        setProgressBar(audioElement.currentTime / audioElement.duration);
     }
 
     function setupVisualization() {
@@ -808,8 +824,31 @@
         bandElement.style.setProperty('height', `${intensity * VISUALIZATION_HEIGHT_REM}rem`);
     }
 
-    function setProgressBar(ratio) {
-        progressBar.style.setProperty('width', `${progressContainer.clientWidth * ratio}px`);
+    function setProgressIndicator() {
+        if (!Number.isNaN(audioElement.duration)) {
+            currentTimeElement.textContent = `${getTimeString(audioElement.currentTime)} / ${getTimeString(audioElement.duration)}`;
+
+            progressBar.style.setProperty(
+                'width',
+                `${progressBarContainer.clientWidth * audioElement.currentTime / audioElement.duration}px`
+            );
+        }
+    }
+
+    function setProgressBufferBar() {
+        if (audioElement.buffered.length) {
+            progressBufferBar.style.setProperty(
+                'width',
+                `${progressBarContainer.clientWidth * audioElement.buffered.end(audioElement.seekable.length - 1) / audioElement.duration}px`
+            );
+        }
+    }
+
+    function getTimeString(secondsInput) {
+        const minutes = Math.floor(secondsInput / 60);
+        const seconds = Math.floor(secondsInput % 60);
+
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     }
 
     /*
@@ -846,10 +885,9 @@
     }
 
     function findIAFiles(identifier) {
-        const corsProxyPrefix = 'http://api.allorigins.win/get?url=';
         const url = `https://ia800605.us.archive.org/29/items/${identifier}/${identifier}_files.xml`;
 
-        return fetch(corsProxyPrefix + url)
+        return fetch(CORS_PROXY_PREFIX + url)
             .then(response => {
                 // console.log('got response', response);
                 return response.json();
@@ -926,7 +964,7 @@
     }
 
     function playFile({url, name}) {
-        songNameElement.textContent = name;
+        setSongName(name);
         audioElement.src = url;
 
         play();
@@ -990,7 +1028,6 @@
         setSong(songs[0].id);
         populateSongList();
         setupVisualization();
-        setProgressBar(0);
         setVolume();
         draw();
     }
@@ -1007,23 +1044,22 @@ split into modules?
 directory of songs
 - FMA?
 
-host cors proxy?
+play/add all?
 
-search pages
+seek 5 seconds?
+
+host cors proxy?
+have cors proxy retry backups
+
+IA search pages
 
 provide some simple recommendations
+- Mélomane
 
 handle song loading errors
 handle no files found
 
 include files other than mp3
 
-add buffering indicator
-add time indicator
-
 don't play next song if song wasn't played from playlist
-
-play/add all?
-
-play button toggle on file play
 -->
