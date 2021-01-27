@@ -48,7 +48,8 @@
     <div id="songName" class="text-center h-20 text-3xl mb-9 overflow-x-scroll leading-10"></div>
 
     <div class="flex flex-col items-end">
-        <div id="progressBarContainer" class="relative bg-gray-200 w-full rounded-full h-3.5 cursor-pointer overflow-hidden">
+        <div id="progressBarContainer"
+             class="relative bg-gray-200 w-full rounded-full h-3.5 cursor-pointer overflow-hidden">
             <div id="progressBufferBar" class="bg-blue-200 h-full rounded-full absolute top-0 left-0"></div>
             <div id="progressBar" class="bg-yellow-500 h-full rounded-full absolute top-0 left-0"></div>
         </div>
@@ -203,6 +204,10 @@
                 <svg id="internetArchiveSearchLoading" class="hidden animate-spin h-9 w-9" viewBox="0 0 24 24">
                     <path d="M18.65 8.35l-2.79 2.79c-.32.32-.1.86.35.86H18c0 3.31-2.69 6-6 6-.79 0-1.56-.15-2.25-.44-.36-.15-.77-.04-1.04.23-.51.51-.33 1.37.34 1.64.91.37 1.91.57 2.95.57 4.42 0 8-3.58 8-8h1.79c.45 0 .67-.54.35-.85l-2.79-2.79c-.19-.2-.51-.2-.7-.01zM6 12c0-3.31 2.69-6 6-6 .79 0 1.56.15 2.25.44.36.15.77.04 1.04-.23.51-.51.33-1.37-.34-1.64C14.04 4.2 13.04 4 12 4c-4.42 0-8 3.58-8 8H2.21c-.45 0-.67.54-.35.85l2.79 2.79c.2.2.51.2.71 0l2.79-2.79c.31-.31.09-.85-.36-.85H6z"></path>
                 </svg>
+
+                <div id="internetArchiveSearchError" class="hidden text-red-500">
+                    There was a problem searching the Internet Archive
+                </div>
             </div>
 
             <div id="internetArchiveList"></div>
@@ -211,14 +216,20 @@
                 <div class="itemName px-2 py-1 cursor-pointer hover:bg-yellow-500 transition-all ease-in-out duration-300 rounded-2xl">
                     Item Name
                 </div>
-                <div class="files hidden mb-2 fill-current">
+                <div class="filesContainer hidden mb-3 px-2 fill-current">
                     <svg class="loading hidden animate-spin h-9 w-9" viewBox="0 0 24 24">
                         <path d="M18.65 8.35l-2.79 2.79c-.32.32-.1.86.35.86H18c0 3.31-2.69 6-6 6-.79 0-1.56-.15-2.25-.44-.36-.15-.77-.04-1.04.23-.51.51-.33 1.37.34 1.64.91.37 1.91.57 2.95.57 4.42 0 8-3.58 8-8h1.79c.45 0 .67-.54.35-.85l-2.79-2.79c-.19-.2-.51-.2-.7-.01zM6 12c0-3.31 2.69-6 6-6 .79 0 1.56.15 2.25.44.36.15.77.04 1.04-.23.51-.51.33-1.37-.34-1.64C14.04 4.2 13.04 4 12 4c-4.42 0-8 3.58-8 8H2.21c-.45 0-.67.54-.35.85l2.79 2.79c.2.2.51.2.71 0l2.79-2.79c.31-.31.09-.85-.36-.85H6z"></path>
                     </svg>
+
+                    <div class="filesError hidden text-red-500">
+                        There was a problem listing files from the Internet Archive
+                    </div>
+
+                    <div class="files"></div>
                 </div>
             </div>
 
-            <div id="fileTemplate" class="file hidden px-2 flex">
+            <div id="fileTemplate" class="file hidden flex">
                 <div class="fileControls text-blue-900 fill-current flex justify-center items-center">
                     <svg class="filePlayButton h-7 w-7 cursor-pointer hover:text-yellow-500 transform hover:scale-125 transition-all ease-out duration-200 mx-1"
                          viewBox="0 0 24 24">
@@ -332,6 +343,7 @@
     const internetArchiveSearchButton = document.getElementById('internetArchiveSearchButton');
     const fileTemplate = document.getElementById('fileTemplate');
     const internetArchiveSearchLoading = document.getElementById('internetArchiveSearchLoading');
+    const internetArchiveSearchError = document.getElementById('internetArchiveSearchError');
 
     const audioContext = new AudioContext();
     const masterGain = audioContext.createGain();
@@ -865,8 +877,16 @@
 
         searchInternetArchive(searchTerms)
             .then(items => {
+                internetArchiveSearchError.classList.add('hidden');
                 internetArchiveSearchLoading.classList.add('hidden');
                 populateIAList(items);
+            })
+            .catch(error => {
+                console.error('There was a problem searching the Internet Archive');
+                console.error(error);
+
+                internetArchiveSearchError.classList.remove('hidden');
+                internetArchiveSearchLoading.classList.add('hidden');
             });
     }
 
@@ -876,12 +896,15 @@
 
         return fetch(searchUrl)
             .then(response => {
-                // console.log('got response');
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+
                 return response.json();
             })
             .then(json => {
                 return json.response.docs;
-            });
+            })
     }
 
     function findIAFiles(identifier) {
@@ -889,11 +912,13 @@
 
         return fetch(CORS_PROXY_PREFIX + url)
             .then(response => {
-                // console.log('got response', response);
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+
                 return response.json();
             })
             .then(json => {
-                // console.log(json);
                 const parser = new DOMParser();
                 const xml = parser.parseFromString(json.contents, 'text/xml');
 
@@ -907,12 +932,10 @@
                 }
 
                 return files;
-            });
+            })
     }
 
     function populateIAList(items) {
-        // console.log('items', items);
-
         while (internetArchiveList.firstChild) {
             internetArchiveList.removeChild(internetArchiveList.firstChild);
         }
@@ -920,8 +943,10 @@
         items.forEach((item) => {
             const itemElement = internetArchiveItemTemplate.cloneNode(true);
             const itemNameElement = itemElement.getElementsByClassName('itemName')[0];
+            const filesContainerElement = itemElement.getElementsByClassName('filesContainer')[0];
             const fileListElement = itemElement.getElementsByClassName('files')[0];
             const loadingElement = itemElement.getElementsByClassName('loading')[0];
+            const filesErrorElement = itemElement.getElementsByClassName('filesError')[0];
 
             itemElement.id = '';
             itemElement.classList.remove('hidden');
@@ -933,14 +958,15 @@
                     return;
                 }
 
-                if (fileListElement.classList.contains('hidden')) {
-                    fileListElement.classList.remove('hidden');
+                if (filesContainerElement.classList.contains('hidden')) {
+                    filesContainerElement.classList.remove('hidden');
 
-                    if (fileListElement.childElementCount === 1) {
+                    if (!fileListElement.childElementCount) {
                         loadingElement.classList.remove('hidden');
 
                         findIAFiles(item.identifier)
                             .then(files => {
+                                filesErrorElement.classList.add('hidden');
                                 loadingElement.classList.add('hidden');
 
                                 populateIAFiles({
@@ -948,10 +974,17 @@
                                     item,
                                     files,
                                 });
+                            })
+                            .catch(error => {
+                                console.error('There was a problem listing files from the Internet Archive');
+                                console.error(error);
+
+                                loadingElement.classList.add('hidden');
+                                filesErrorElement.classList.remove('hidden');
                             });
                     }
                 } else {
-                    fileListElement.classList.add('hidden');
+                    filesContainerElement.classList.add('hidden');
                 }
             });
 
@@ -1040,11 +1073,11 @@
 
 <!-- todo
 show alt text for buttons? aria?
-split into modules?
+look good on mobile
 directory of songs
 - FMA?
 
-play/add all?
+play/add all? x
 
 seek 5 seconds?
 
@@ -1056,10 +1089,16 @@ IA search pages
 provide some simple recommendations
 - Mélomane
 
-handle song loading errors
 handle no files found
 
 include files other than mp3
 
 don't play next song if song wasn't played from playlist
+
+ability to save playlist
+
+!split into modules
+
+use favicon which works with light and dark background
+fix buffer bar
 -->
