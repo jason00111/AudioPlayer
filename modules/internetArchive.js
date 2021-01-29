@@ -10,45 +10,102 @@ const fileTemplate = document.getElementById('fileTemplate');
 const internetArchiveSearchLoading = document.getElementById('internetArchiveSearchLoading');
 const internetArchiveSearchError = document.getElementById('internetArchiveSearchError');
 const audioElement = document.getElementById('audio');
+const previousPageButton = document.getElementById('previousPage');
+const nextPageButton = document.getElementById('nextPage');
+const pageIndicator = document.getElementById('pageIndicator');
+const pageControlsElement = document.getElementById('pageControls');
+const pageLoadingElement = document.getElementById('pageLoading');
+const pageSearchError = document.getElementById('pageSearchError');
+const internetArchiveNoResults = document.getElementById('internetArchiveNoResults');
 
 const CORS_PROXY_PREFIX = 'http://api.allorigins.win/get?url=';
 
-internetArchiveSearchButton.addEventListener('click', searchInternetArchiveHandler);
+const state = {
+    currentPage: 1,
+    searchTerms: '',
+}
+
+internetArchiveSearchButton.addEventListener('click', searchButtonHandler);
 internetArchiveSearchInput.addEventListener('keyup', (event) => {
     if (event.code === 'Enter') {
         playClick();
-        searchInternetArchiveHandler();
+        searchButtonHandler();
     }
 });
 
 internetArchiveSearchButton.addEventListener('click', playClick);
+previousPageButton.addEventListener('click', previousPage)
+nextPageButton.addEventListener('click', nextPage)
 
-function searchInternetArchiveHandler() {
-    if (!internetArchiveSearchLoading.classList.contains('hidden')) {
+function searchButtonHandler() {
+    state.searchTerms = internetArchiveSearchInput.value;
+
+    searchHandler({
+        page: 1,
+        loadingIndicator: internetArchiveSearchLoading,
+        errorIndicator: internetArchiveSearchError,
+    });
+}
+
+function searchHandler({ page, loadingIndicator, errorIndicator }) {
+    if (!loadingIndicator.classList.contains('hidden')) {
         return;
     }
 
-    const searchTerms = internetArchiveSearchInput.value;
-    internetArchiveSearchLoading.classList.remove('hidden');
+    loadingIndicator.classList.remove('hidden');
 
-    searchInternetArchive(searchTerms)
-        .then(items => {
-            internetArchiveSearchError.classList.add('hidden');
-            internetArchiveSearchLoading.classList.add('hidden');
-            populateIAList(items);
+    searchInternetArchive({
+        page,
+        searchTerms: state.searchTerms,
+    })
+        .then(({ items, numberOfPages }) => {
+            errorIndicator.classList.add('hidden');
+            loadingIndicator.classList.add('hidden');
+
+            populateIAList({ page, items, numberOfPages });
         })
         .catch(error => {
             console.error('There was a problem searching the Internet Archive');
             console.error(error);
 
-            internetArchiveSearchError.classList.remove('hidden');
-            internetArchiveSearchLoading.classList.add('hidden');
+            errorIndicator.classList.remove('hidden');
+            loadingIndicator.classList.add('hidden');
         });
 }
 
-function searchInternetArchive(searchTerms) {
+function nextPage() {
+    goToPage(state.currentPage + 1);
+}
+
+function previousPage() {
+    if (state.currentPage === 1) {
+        return;
+    }
+
+    goToPage(state.currentPage - 1);
+}
+
+function goToPage(page) {
+    searchHandler({
+        page,
+        loadingIndicator: pageLoadingElement,
+        errorIndicator: pageSearchError,
+    });
+}
+
+function searchInternetArchive({ searchTerms, page }) {
+    const resultsPerPage = 20;
     const searchTermsString = searchTerms.split(' ').join('+');
-    const searchUrl = `https://archive.org/advancedsearch.php?q=format%3A%28VBR+MP3%29+${searchTermsString}&fl%5B%5D=identifier&fl%5B%5D=title&sort%5B%5D=avg_rating+desc&sort%5B%5D=reviewdate+desc&sort%5B%5D=&rows=20&page=1&output=json`;
+    const searchUrl = `https://archive.org/advancedsearch.php?q=`
+        + `format(VBR+MP3)+${searchTermsString}`
+        + `&fl[]=identifier`
+        + `&fl[]=title`
+        + `&sort[]=avg_rating+desc`
+        + `&sort[]=reviewdate+desc`
+        + `&sort[]=`
+        + `&rows=${resultsPerPage}`
+        + `&page=${page}`
+        + `&output=json`;
 
     return fetch(searchUrl)
         .then(response => {
@@ -59,11 +116,15 @@ function searchInternetArchive(searchTerms) {
             return response.json();
         })
         .then(json => {
-            return json.response.docs;
+            return {
+                items: json.response.docs,
+                numberOfPages: Math.ceil(json.response.numFound / resultsPerPage),
+            }
         })
 }
 
 function findIAFiles(identifier) {
+    // FIXME: Don't use this domain
     const url = `https://ia800605.us.archive.org/29/items/${identifier}/${identifier}_files.xml`;
 
     return fetch(CORS_PROXY_PREFIX + url)
@@ -91,10 +152,17 @@ function findIAFiles(identifier) {
         })
 }
 
-function populateIAList(items) {
+function populateIAList({ items, page, numberOfPages }) {
     while (internetArchiveList.firstChild) {
         internetArchiveList.removeChild(internetArchiveList.firstChild);
     }
+
+    if (!items.length) {
+        internetArchiveNoResults.classList.remove('hidden');
+        return;
+    }
+
+    internetArchiveNoResults.classList.add('hidden');
 
     items.forEach((item) => {
         const itemElement = internetArchiveItemTemplate.cloneNode(true);
@@ -150,6 +218,25 @@ function populateIAList(items) {
 
         internetArchiveList.append(itemElement);
     });
+
+    setPageNumbers({ page, numberOfPages });
+}
+
+function setPageNumbers({ page, numberOfPages }) {
+    pageControlsElement.classList.remove('hidden');
+    previousPageButton.classList.remove('hidden');
+    nextPageButton.classList.remove('hidden');
+
+    state.currentPage = page;
+    pageIndicator.textContent = `Page ${page} of ${numberOfPages}`;
+
+    if (page === 1) {
+        previousPageButton.classList.add('hidden');
+    }
+
+    if (page === numberOfPages) {
+        nextPageButton.classList.add('hidden');
+    }
 }
 
 function playFile({ url, name }) {

@@ -212,9 +212,23 @@
                 </div>
             </div>
 
+            <div id="internetArchiveNoResults" class="hidden m-1">
+                No results found
+            </div>
+
             <div id="internetArchiveList"></div>
 
-            <div id="pageControls">Pages go here</div>
+            <div id="pageControls" class="hidden flex text-xs">
+                <div id="pageIndicator" class="p-2 m-2"></div>
+                <div id="previousPage" class="cursor-pointer rounded-full bg-blue-100 p-2 m-2">PREVIOUS</div>
+                <div id="nextPage" class="cursor-pointer rounded-full bg-blue-100 p-2 m-2">NEXT</div>
+                <svg id="pageLoading" class="hidden animate-spin h-9 w-9 m-2" viewBox="0 0 24 24">
+                    <path d="M18.65 8.35l-2.79 2.79c-.32.32-.1.86.35.86H18c0 3.31-2.69 6-6 6-.79 0-1.56-.15-2.25-.44-.36-.15-.77-.04-1.04.23-.51.51-.33 1.37.34 1.64.91.37 1.91.57 2.95.57 4.42 0 8-3.58 8-8h1.79c.45 0 .67-.54.35-.85l-2.79-2.79c-.19-.2-.51-.2-.7-.01zM6 12c0-3.31 2.69-6 6-6 .79 0 1.56.15 2.25.44.36.15.77.04 1.04-.23.51-.51.33-1.37-.34-1.64C14.04 4.2 13.04 4 12 4c-4.42 0-8 3.58-8 8H2.21c-.45 0-.67.54-.35.85l2.79 2.79c.2.2.51.2.71 0l2.79-2.79c.31-.31.09-.85-.36-.85H6z"></path>
+                </svg>
+                <div id="pageSearchError" class="hidden text-red-500 p-2 m-2">
+                    There was a problem searching the Internet Archive
+                </div>
+            </div>
 
             <div id="internetArchiveItemTemplate" class="internetArchiveItem hidden">
                 <div class="itemName px-2 py-1 cursor-pointer hover:bg-yellow-500 transition-all ease-in-out duration-300 rounded-2xl">
@@ -281,34 +295,40 @@
 </html>
 
 <!-- todo
-show alt text for buttons? aria?
-look good on mobile
-directory of songs
-- FMA?
-
-play/add all? x
-
-seek 5 seconds?
-
-host cors proxy?
-have cors proxy retry backups
-
-IA search pages
-
-provide some simple recommendations
-- Mélomane
-
-handle cors error when loading file
-
-include files other than mp3
-
-don't play next song if song wasn't played from playlist
-
-ability to save playlist
-
+BUGS
 fix buffer bar
 
+NEW FEATURES
+FMA?
+ability to save playlist
 save history?
 
+CRITICAL IMPROVEMENTS
+look good on mobile
+provide some simple recommendations
+  - Mélomane
+handle cors error when loading file
+
+IMPROVEMENTS
+host cors proxy?
+have cors proxy retry backups
+show alt text for buttons? aria?
+include files other than mp3
+! don't play next song if song wasn't played from playlist
 add pause button to IA files
+add play next button to IA files
+play/add all? x
+seek 5 seconds?
+use components?
+ - loading
+ - buttons
+ - icons
+ionic?
+use templates
+playback speed
+arrow keys to search
+space to play/pause
+
+loading next to next button
+handle no results
 -->
