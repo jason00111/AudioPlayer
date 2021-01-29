@@ -35,12 +35,42 @@ audioElement.addEventListener('stalled', () => {
     console.log('stalled');
 });
 
+document.addEventListener('keydown', (event) => {
+    if (event.code === 'Space') {
+        supportedKeyPressed(event);
+        togglePlay();
+    } else if (event.code === 'ArrowLeft') {
+        supportedKeyPressed(event);
+        jumpBack();
+    } else if (event.code === 'ArrowRight') {
+        supportedKeyPressed(event);
+        jumpForward();
+    }
+});
+
 [
     playPauseButton,
     previousButton,
     nextButton,
     shuffleButton,
 ].forEach(button => button.addEventListener('click', playClick));
+
+function supportedKeyPressed(event) {
+    playClick();
+    event.preventDefault();
+}
+
+function jumpBack() {
+    jump(-5);
+}
+
+function jumpForward() {
+    jump(5);
+}
+
+function jump(jumpTime) {
+    audioElement.currentTime = audioElement.currentTime + jumpTime;
+}
 
 function togglePlay() {
     if (state.playing) {

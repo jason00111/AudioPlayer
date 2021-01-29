@@ -19,6 +19,34 @@ volumeIcon.addEventListener('click', toggleMute);
 volumeSlider.addEventListener('input', setVolume);
 volumeIcon.addEventListener('click', playClick);
 
+document.addEventListener('keydown', (event) => {
+    if (event.code === 'ArrowUp') {
+        supportedKeyPressed(event);
+        volumeUp();
+    } else if (event.code === 'ArrowDown') {
+        supportedKeyPressed(event);
+        volumeDown();
+    }
+});
+
+function supportedKeyPressed(event) {
+    playClick();
+    event.preventDefault();
+}
+
+function volumeUp() {
+    changeVolumeBy(0.1);
+}
+
+function volumeDown() {
+    changeVolumeBy(-0.1);
+}
+
+function changeVolumeBy(changeAmount) {
+    volumeSlider.valueAsNumber += changeAmount;
+    setVolume();
+}
+
 function toggleMute() {
     if (state.mute) {
         state.mute = false;
@@ -28,18 +56,18 @@ function toggleMute() {
         }
 
         masterGain.gain.setTargetAtTime(state.volume, audioContext.currentTime, VOLUME_FADE_TIME_CONSTANT);
-        volumeSlider.value = state.volume.toString();
+        volumeSlider.valueAsNumber = state.volume;
         setVolumeIcon(state.volume);
     } else {
         state.mute = true;
         masterGain.gain.setTargetAtTime(0, audioContext.currentTime, VOLUME_FADE_TIME_CONSTANT);
-        volumeSlider.value = '0';
+        volumeSlider.valueAsNumber = 0;
         setVolumeIcon(0);
     }
 }
 
 function setVolume() {
-    state.volume = Number(volumeSlider.value);
+    state.volume = volumeSlider.valueAsNumber;
 
     masterGain.gain.setTargetAtTime(state.volume, audioContext.currentTime, VOLUME_FADE_TIME_CONSTANT);
 

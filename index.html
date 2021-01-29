@@ -144,6 +144,14 @@
                  class="border-t-2 border-l-2 border-r-2 border-blue-200 rounded-t-2xl px-4 py-2 mx-0.5 transition-all ease-in-out duration-300 hover:bg-blue-200 cursor-pointer">
                 Free Music Archive
             </div>
+            <div id="playlistsTabButton"
+                 class="border-t-2 border-l-2 border-r-2 border-blue-200 rounded-t-2xl px-4 py-2 mx-0.5 transition-all ease-in-out duration-300 hover:bg-blue-200 cursor-pointer">
+                Playlists
+            </div>
+            <div id="historyTabButton"
+                 class="border-t-2 border-l-2 border-r-2 border-blue-200 rounded-t-2xl px-4 py-2 mx-0.5 transition-all ease-in-out duration-300 hover:bg-blue-200 cursor-pointer">
+                History
+            </div>
         </div>
 
         <div id="webFileTab"
@@ -297,17 +305,26 @@
 <!-- todo
 BUGS
 fix buffer bar
+error when playlist empty
+    - Uncaught TypeError: songs[nextSongIndex] is undefined
+    getNextSongInList http://127.0.0.1:8080/modules/playlist.js:146
+    playNextSongInList http://127.0.0.1:8080/modules/songControls.js:91
+    playNextSong http://127.0.0.1:8080/modules/songControls.js:73
+    EventListener.handleEvent* http://127.0.0.1:8080/modules/songControls.js:31
+
 
 NEW FEATURES
 FMA?
 ability to save playlist
 save history?
+feedback form
 
 CRITICAL IMPROVEMENTS
 look good on mobile
 provide some simple recommendations
   - Mélomane
 handle cors error when loading file
+fix IA file download domain
 
 IMPROVEMENTS
 host cors proxy?
@@ -317,18 +334,14 @@ include files other than mp3
 ! don't play next song if song wasn't played from playlist
 add pause button to IA files
 add play next button to IA files
-play/add all? x
+play/add all?
 seek 5 seconds?
 use components?
  - loading
  - buttons
  - icons
 ionic?
-use templates
 playback speed
-arrow keys to search
-space to play/pause
+scrolling jumps when playlist changes
 
-loading next to next button
-handle no results
 -->

@@ -148,7 +148,7 @@ function findIAFiles(identifier) {
                 }
             }
 
-            return files;
+            return files.sort();
         })
 }
 
