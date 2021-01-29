@@ -19,6 +19,7 @@ const pageSearchError = document.getElementById('pageSearchError');
 const internetArchiveNoResults = document.getElementById('internetArchiveNoResults');
 
 const CORS_PROXY_PREFIX = 'http://api.allorigins.win/get?url=';
+const INTERNET_ARCHIVE_DOWNLOAD_PREFIX = 'https://archive.org/download/'
 
 const state = {
     currentPage: 1,
@@ -124,8 +125,7 @@ function searchInternetArchive({ searchTerms, page }) {
 }
 
 function findIAFiles(identifier) {
-    // FIXME: Don't use this domain
-    const url = `https://ia800605.us.archive.org/29/items/${identifier}/${identifier}_files.xml`;
+    const url = `${INTERNET_ARCHIVE_DOWNLOAD_PREFIX}${identifier}/${identifier}_files.xml`;
 
     return fetch(CORS_PROXY_PREFIX + url)
         .then(response => {
@@ -264,7 +264,7 @@ function populateIAFiles({ itemElement, item, files }) {
         const filePlayButton = fileElement.getElementsByClassName('filePlayButton')[0];
         const fileAddButton = fileElement.getElementsByClassName('fileAddButton')[0];
 
-        const url = `https://archive.org/download/${item.identifier}/${file}`;
+        const url = `${INTERNET_ARCHIVE_DOWNLOAD_PREFIX}${item.identifier}/${file}`;
         const name = file.slice(0, -4);
 
         fileElement.id = '';
