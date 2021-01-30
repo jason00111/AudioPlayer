@@ -91,14 +91,12 @@ export function populatePlayList() {
     }
 
     songs.forEach((song) => {
-        const songElement = songTemplateElement.cloneNode(true);
-        const songNameElement = songElement.getElementsByClassName('songName')[0];
-        const removeButton = songElement.getElementsByClassName('removeButton')[0];
-        const moveUpButton = songElement.getElementsByClassName('moveUpButton')[0];
-        const moveDownButton = songElement.getElementsByClassName('moveDownButton')[0];
+        const songElement = songTemplateElement.content.cloneNode(true).firstElementChild;
+        const songNameElement = songElement.querySelector('.songName');
+        const removeButton = songElement.querySelector('.removeButton');
+        const moveUpButton = songElement.querySelector('.moveUpButton');
+        const moveDownButton = songElement.querySelector('.moveDownButton');
 
-        songElement.id = '';
-        songElement.classList.remove('hidden');
         songElement.dataset.songId = song.id;
         songNameElement.textContent = song.name;
 

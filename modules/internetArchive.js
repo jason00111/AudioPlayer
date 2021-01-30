@@ -49,11 +49,11 @@ function searchButtonHandler() {
 }
 
 function searchHandler({ page, loadingIndicator, errorIndicator }) {
-    if (!loadingIndicator.classList.contains('hidden')) {
+    if (loadingIndicator.getAttribute('active') !== null) {
         return;
     }
 
-    loadingIndicator.classList.remove('hidden');
+    loadingIndicator.setAttribute('active', '');
 
     searchInternetArchive({
         page,
@@ -61,7 +61,6 @@ function searchHandler({ page, loadingIndicator, errorIndicator }) {
     })
         .then(({ items, numberOfPages }) => {
             errorIndicator.classList.add('hidden');
-            loadingIndicator.classList.add('hidden');
 
             populateIAList({ page, items, numberOfPages });
         })
@@ -70,7 +69,9 @@ function searchHandler({ page, loadingIndicator, errorIndicator }) {
             console.error(error);
 
             errorIndicator.classList.remove('hidden');
-            loadingIndicator.classList.add('hidden');
+        })
+        .finally(() => {
+            loadingIndicator.removeAttribute('active');
         });
 }
 
@@ -165,20 +166,18 @@ function populateIAList({ items, page, numberOfPages }) {
     internetArchiveNoResults.classList.add('hidden');
 
     items.forEach((item) => {
-        const itemElement = internetArchiveItemTemplate.cloneNode(true);
-        const itemNameElement = itemElement.getElementsByClassName('itemName')[0];
-        const filesContainerElement = itemElement.getElementsByClassName('filesContainer')[0];
-        const fileListElement = itemElement.getElementsByClassName('files')[0];
-        const loadingElement = itemElement.getElementsByClassName('loading')[0];
-        const filesErrorElement = itemElement.getElementsByClassName('filesError')[0];
+        const itemElement = internetArchiveItemTemplate.content.cloneNode(true).firstElementChild;
+        const itemNameElement = itemElement.querySelector('.itemName');
+        const filesContainerElement = itemElement.querySelector('.filesContainer');
+        const fileListElement = itemElement.querySelector('.files');
+        const filesLoadingElement = itemElement.querySelector('.filesLoading');
+        const filesErrorElement = itemElement.querySelector('.filesError');
 
-        itemElement.id = '';
-        itemElement.classList.remove('hidden');
         itemElement.dataset.itemId = item.identifier;
         itemNameElement.textContent = item.title;
 
         itemNameElement.addEventListener('click', () => {
-            if (!loadingElement.classList.contains('hidden')) {
+            if (filesLoadingElement.getAttribute('active') !== null) {
                 return;
             }
 
@@ -186,12 +185,11 @@ function populateIAList({ items, page, numberOfPages }) {
                 filesContainerElement.classList.remove('hidden');
 
                 if (!fileListElement.childElementCount) {
-                    loadingElement.classList.remove('hidden');
+                    filesLoadingElement.setAttribute('active', '');
 
                     findIAFiles(item.identifier)
                         .then(files => {
                             filesErrorElement.classList.add('hidden');
-                            loadingElement.classList.add('hidden');
 
                             populateIAFiles({
                                 itemElement,
@@ -203,8 +201,10 @@ function populateIAList({ items, page, numberOfPages }) {
                             console.error('There was a problem listing files from the Internet Archive');
                             console.error(error);
 
-                            loadingElement.classList.add('hidden');
                             filesErrorElement.classList.remove('hidden');
+                        })
+                        .finally(() => {
+                            filesLoadingElement.removeAttribute('active');
                         });
                 }
             } else {
@@ -259,16 +259,14 @@ function populateIAFiles({ itemElement, item, files }) {
     }
 
     files.forEach((file) => {
-        const fileElement = fileTemplate.cloneNode(true);
-        const fileNameElement = fileElement.getElementsByClassName('fileName')[0];
-        const filePlayButton = fileElement.getElementsByClassName('filePlayButton')[0];
-        const fileAddButton = fileElement.getElementsByClassName('fileAddButton')[0];
+        const fileElement = fileTemplate.content.cloneNode(true).firstElementChild;
+        const fileNameElement = fileElement.querySelector('.fileName');
+        const filePlayButton = fileElement.querySelector('.filePlayButton');
+        const fileAddButton = fileElement.querySelector('.fileAddButton');
 
         const url = `${INTERNET_ARCHIVE_DOWNLOAD_PREFIX}${item.identifier}/${file}`;
         const name = file.slice(0, -4);
 
-        fileElement.id = '';
-        fileElement.classList.remove('hidden');
         fileNameElement.textContent = file;
 
         fileNameElement.addEventListener('click', () => playFile({

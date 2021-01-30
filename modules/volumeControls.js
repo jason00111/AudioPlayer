@@ -3,16 +3,12 @@ import { audioContext, masterGain } from './audio.js';
 
 const volumeIcon = document.getElementById('volumeIcon');
 const volumeSlider = document.getElementById('volume');
-const volumeMutePath = document.getElementById('volumeMutePath');
-const volumeHalfPath = document.getElementById('volumeHalfPath');
-const volumeFullPath = document.getElementById('volumeFullPath');
 
 const VOLUME_FADE_TIME_CONSTANT = 0.05;
 
 const state = {
     mute: false,
     volume: 1,
-    volumeIcon: undefined,
 }
 
 volumeIcon.addEventListener('click', toggleMute);
@@ -80,26 +76,14 @@ function setVolumeIcon(volume) {
     const normalizedVolume = volume / Number(volumeSlider.max);
 
     if (normalizedVolume > 0.5) {
-        if (state.volumeIcon !== 0) {
-            state.volumeIcon = 0;
-            volumeMutePath.classList.add('hidden');
-            volumeHalfPath.classList.add('hidden');
-            volumeFullPath.classList.remove('hidden');
-        }
+        volumeIcon.setAttribute('icon', 'volumeFull');
+        volumeIcon.setAttribute('title', 'Mute (m)');
     } else if (normalizedVolume > 0) {
-        if (state.volumeIcon !== 1) {
-            state.volumeIcon = 1;
-            volumeMutePath.classList.add('hidden');
-            volumeHalfPath.classList.remove('hidden');
-            volumeFullPath.classList.add('hidden');
-        }
+        volumeIcon.setAttribute('icon', 'volumeHalf');
+        volumeIcon.setAttribute('title', 'Mute (m)');
     } else {
-        if (state.volumeIcon !== 2) {
-            state.volumeIcon = 2;
-            volumeMutePath.classList.remove('hidden');
-            volumeHalfPath.classList.add('hidden');
-            volumeFullPath.classList.add('hidden');
-        }
+        volumeIcon.setAttribute('icon', 'mute');
+        volumeIcon.setAttribute('title', 'Unmute (m)');
     }
 }
 

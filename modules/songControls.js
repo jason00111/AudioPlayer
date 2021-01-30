@@ -9,14 +9,11 @@ import {
 
 const audioElement = document.getElementById('audio');
 const playPauseButton = document.getElementById('playPauseButton');
-const playPath = document.getElementById('playPath');
-const pausePath = document.getElementById('pausePath');
 const previousButton = document.getElementById('previousButton');
 const nextButton = document.getElementById('nextButton');
 const shuffleButton = document.getElementById('shuffleButton');
 const mainSongNameElement = document.getElementById('songName');
 
-const ACTIVE_ICON_CLASS = 'text-yellow-500';
 const SELECTED_SONG_CLASS = 'bg-yellow-500';
 
 const state = {
@@ -84,16 +81,16 @@ export function play() {
     state.playing = true;
     audioElement.play();
 
-    playPath.classList.add('hidden');
-    pausePath.classList.remove('hidden');
+    playPauseButton.setAttribute('icon', 'pause');
+    playPauseButton.setAttribute('title', 'Pause (space)');
 }
 
 export function pause() {
     state.playing = false;
     audioElement.pause();
 
-    pausePath.classList.add('hidden');
-    playPath.classList.remove('hidden');
+    playPauseButton.setAttribute('icon', 'play');
+    playPauseButton.setAttribute('title', 'Play (space)');
 }
 
 function playNextSong() {
@@ -146,10 +143,10 @@ function playPreviouslyPlayedSong() {
 function toggleShuffle() {
     if (state.shuffle) {
         state.shuffle = false;
-        shuffleButton.classList.remove(ACTIVE_ICON_CLASS);
+        shuffleButton.removeAttribute('active');
     } else {
         state.shuffle = true;
-        shuffleButton.classList.add(ACTIVE_ICON_CLASS);
+        shuffleButton.setAttribute('active', '');
     }
 }
 

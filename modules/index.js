@@ -1,3 +1,5 @@
+import '../components/index.js';
+
 import './visualization.js';
 import './progressIndicator.js';
 import './songControls.js';
