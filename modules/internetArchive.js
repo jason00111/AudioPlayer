@@ -54,6 +54,7 @@ function searchHandler({ page, loadingIndicator, errorIndicator }) {
     }
 
     loadingIndicator.setAttribute('active', '');
+    internetArchiveSearchButton.classList.add('hidden');
 
     searchInternetArchive({
         page,
@@ -72,6 +73,7 @@ function searchHandler({ page, loadingIndicator, errorIndicator }) {
         })
         .finally(() => {
             loadingIndicator.removeAttribute('active');
+            internetArchiveSearchButton.classList.remove('hidden');
         });
 }
 

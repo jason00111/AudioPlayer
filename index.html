@@ -44,7 +44,7 @@
 
 <audio id="audio" crossorigin="anonymous"></audio>
 
-<div class="m-9 p-6 max-w-screen-md bg-blue-50 rounded-3xl space-y-9">
+<div class="max-w-screen-md p-3 bg-blue-50 space-y-6">
     <div id="visualization" class="w-full h-40 flex justify-center items-end"></div>
 
     <div id="songName" class="text-center h-20 text-3xl mb-9 overflow-x-scroll leading-10"></div>
@@ -72,7 +72,7 @@
     <div id="songList"></div>
 
     <template id="songTemplate">
-        <div class="song cursor-pointer px-9 py-3 hover:bg-blue-200 transition-all ease-in-out duration-300 rounded-2xl bg-opacity-30 flex justify-between items-center">
+        <div class="song cursor-pointer px-3 py-3 hover:bg-blue-200 transition-all ease-in-out duration-300 rounded-2xl bg-opacity-30 flex justify-between items-center">
             <div class="songName"></div>
             <div class="songControls flex items-center text-blue-900 fill-current space-x-1">
                 <icon-button class="removeButton w-7 h-7" title="Remove" icon="remove"></icon-button>
@@ -100,14 +100,14 @@
                  class="border-t-2 border-l-2 border-r-2 border-blue-200 rounded-t-2xl px-4 py-2 mx-0.5 transition-all ease-in-out duration-300 hover:bg-blue-200 cursor-pointer">
                 Free Music Archive
             </div>
-            <div id="playlistsTabButton"
-                 class="border-t-2 border-l-2 border-r-2 border-blue-200 rounded-t-2xl px-4 py-2 mx-0.5 transition-all ease-in-out duration-300 hover:bg-blue-200 cursor-pointer">
-                Playlists
-            </div>
-            <div id="historyTabButton"
-                 class="border-t-2 border-l-2 border-r-2 border-blue-200 rounded-t-2xl px-4 py-2 mx-0.5 transition-all ease-in-out duration-300 hover:bg-blue-200 cursor-pointer">
-                History
-            </div>
+            <!--            <div id="playlistsTabButton"-->
+            <!--                 class="border-t-2 border-l-2 border-r-2 border-blue-200 rounded-t-2xl px-4 py-2 mx-0.5 transition-all ease-in-out duration-300 hover:bg-blue-200 cursor-pointer">-->
+            <!--                Playlists-->
+            <!--            </div>-->
+            <!--            <div id="historyTabButton"-->
+            <!--                 class="border-t-2 border-l-2 border-r-2 border-blue-200 rounded-t-2xl px-4 py-2 mx-0.5 transition-all ease-in-out duration-300 hover:bg-blue-200 cursor-pointer">-->
+            <!--                History-->
+            <!--            </div>-->
         </div>
 
         <div id="webFileTab"
@@ -188,7 +188,7 @@
                 </div>
             </div>
 
-            <template id="internetArchiveItemTemplate" >
+            <template id="internetArchiveItemTemplate">
                 <div class="internetArchiveItem">
                     <div class="itemName px-2 py-1 cursor-pointer hover:bg-yellow-500 transition-all ease-in-out duration-300 rounded-2xl">
                         Item Name
@@ -212,8 +212,10 @@
             <template id="fileTemplate">
                 <div class="file flex">
                     <div class="fileControls text-blue-900 fill-current flex justify-center items-center space-x-1">
-                        <play-pause-button class="filePlayButton h-7 w-7" title="Play" icon="play"></play-pause-button>
-                        <icon-button class="fileAddButton h-6 w-6" title="Add To Playlist" icon="playlistAdd"></icon-button>
+                        <play-pause-button class="filePlayButton h-7 w-7" title="Play"
+                                           icon="play"></play-pause-button>
+                        <icon-button class="fileAddButton h-6 w-6" title="Add To Playlist"
+                                     icon="playlistAdd"></icon-button>
                     </div>
                     <div class="fileName mx-2 px-2 cursor-pointer hover:bg-yellow-500 transition-all ease-in-out duration-300 rounded-2xl">
                         File Name
@@ -224,7 +226,7 @@
     </div>
 </div>
 
-<div class="text-xs m-12 p-6 max-w-screen-md space-y-2 text-center">
+<div class="text-xs my-12 p-6 max-w-screen-md space-y-2 text-center">
     <p>
         Music found at
         <a href="https://freemusicarchive.org" target="_blank" class="text-blue-700">freemusicarchive.org</a>
@@ -240,6 +242,7 @@
         </a>
     </p>
 </div>
+
 
 <script type="module" src="modules/index.js"></script>
 
@@ -279,13 +282,7 @@ host cors proxy?
 have cors proxy retry backups
 show alt text for buttons? aria?
 include files other than mp3
-add pause button to IA files
-add play next button to IA files
 play/add all?
 seek 5 seconds?
-put playlist in tab?
-collapsable playlist?
-more keyboard shortcuts
- - mute
 
 -->

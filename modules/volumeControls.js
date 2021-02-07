@@ -77,13 +77,13 @@ function setVolumeIcon(volume) {
 
     if (normalizedVolume > 0.5) {
         volumeIcon.setAttribute('icon', 'volumeFull');
-        volumeIcon.setAttribute('title', 'Mute (m)');
+        volumeIcon.setAttribute('title', 'Mute');
     } else if (normalizedVolume > 0) {
         volumeIcon.setAttribute('icon', 'volumeHalf');
-        volumeIcon.setAttribute('title', 'Mute (m)');
+        volumeIcon.setAttribute('title', 'Mute');
     } else {
         volumeIcon.setAttribute('icon', 'mute');
-        volumeIcon.setAttribute('title', 'Unmute (m)');
+        volumeIcon.setAttribute('title', 'Unmute');
     }
 }
 
