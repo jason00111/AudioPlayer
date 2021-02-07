@@ -81,16 +81,14 @@ export function play() {
     state.playing = true;
     audioElement.play();
 
-    playPauseButton.setAttribute('icon', 'pause');
-    playPauseButton.setAttribute('title', 'Pause (space)');
+    playPauseButton.setAttribute('playing', 'true');
 }
 
 export function pause() {
     state.playing = false;
     audioElement.pause();
 
-    playPauseButton.setAttribute('icon', 'play');
-    playPauseButton.setAttribute('title', 'Play (space)');
+    playPauseButton.setAttribute('playing', 'false');
 }
 
 function playNextSong() {

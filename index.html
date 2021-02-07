@@ -60,10 +60,10 @@
 
     <div id="controls" class="flex flex-wrap justify-center items-center fill-current space-x-4">
         <icon-button id="previousButton" title="Previous Song" icon="previous" class="w-12 h-12"></icon-button>
-        <icon-button id="playPauseButton" title="Play (space)" icon="play" class="w-16 h-16"></icon-button>
+        <play-pause-button id="playPauseButton" class="w-16 h-16"></play-pause-button>
         <icon-button id="nextButton" title="Next Song" icon="next" class="w-12 h-12"></icon-button>
         <icon-button id="shuffleButton" title="Shuffle" icon="shuffle" class="w-10 h-10"></icon-button>
-        <icon-button id="volumeIcon" title="Mute (m)" icon="volumeHalf" class="w-10 h-10"></icon-button>
+        <icon-button id="volumeIcon" title="Mute" icon="volumeHalf" class="w-10 h-10"></icon-button>
 
         <input type="range" id="volume" value="1.0" min="0" max="1.5" step="0.01"
                class="w-40 cursor-pointer outline-none my-6 appearance-none bg-blue-200 h-2 rounded-full">
@@ -133,8 +133,6 @@
             </div>
             <div class="text-xs opacity-70">
                 <p>The hosting server must allow cross-origin resource sharing.</p>
-                <p>The <a href="https://archive.org" target="_blank" class="text-blue-700">Internet
-                    Archive</a>, for example, is a good source of audio files.</p>
             </div>
         </div>
 
@@ -214,7 +212,7 @@
             <template id="fileTemplate">
                 <div class="file flex">
                     <div class="fileControls text-blue-900 fill-current flex justify-center items-center space-x-1">
-                        <icon-button class="filePlayButton h-7 w-7" title="Play" icon="play"></icon-button>
+                        <play-pause-button class="filePlayButton h-7 w-7" title="Play" icon="play"></play-pause-button>
                         <icon-button class="fileAddButton h-6 w-6" title="Add To Playlist" icon="playlistAdd"></icon-button>
                     </div>
                     <div class="fileName mx-2 px-2 cursor-pointer hover:bg-yellow-500 transition-all ease-in-out duration-300 rounded-2xl">
@@ -273,6 +271,8 @@ handle cors error when loading file
  - eg: files protected by copyright
 don't play next song if song wasn't played from playlist
  - need to abstract out playlist so it plays the next file in the item
+make components extend built-in elements
+scrolling jumps when playlist changes and first song is played
 
 IMPROVEMENTS
 host cors proxy?
@@ -283,7 +283,6 @@ add pause button to IA files
 add play next button to IA files
 play/add all?
 seek 5 seconds?
-scrolling jumps when playlist changes
 put playlist in tab?
 collapsable playlist?
 more keyboard shortcuts

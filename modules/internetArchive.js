@@ -239,13 +239,6 @@ function setPageNumbers({ page, numberOfPages }) {
     }
 }
 
-function playFile({ url, name }) {
-    setSongName(name);
-    audioElement.src = url;
-
-    play();
-}
-
 function populateIAFiles({ itemElement, item, files }) {
     const fileListElement = itemElement.getElementsByClassName('files')[0];
     const noFilesElement = itemElement.getElementsByClassName('noFiles')[0];
@@ -264,20 +257,20 @@ function populateIAFiles({ itemElement, item, files }) {
         const filePlayButton = fileElement.querySelector('.filePlayButton');
         const fileAddButton = fileElement.querySelector('.fileAddButton');
 
+        function playFile() {
+            setSongName(name);
+            audioElement.src = url;
+
+            play();
+        }
+
         const url = `${INTERNET_ARCHIVE_DOWNLOAD_PREFIX}${item.identifier}/${file}`;
         const name = file.slice(0, -4);
 
         fileNameElement.textContent = file;
 
-        fileNameElement.addEventListener('click', () => playFile({
-            url,
-            name,
-        }));
-
-        filePlayButton.addEventListener('click', () => playFile({
-            url,
-            name,
-        }));
+        fileNameElement.addEventListener('click', playFile);
+        filePlayButton.addEventListener('click', playFile);
 
         fileAddButton.addEventListener('click', () => {
             addSongs([

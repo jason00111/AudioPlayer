@@ -1,5 +1,3 @@
-import { checkRequiredAttributes } from './componentUtilities.js';
-
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
 // Icons from https://material-ui.com/components/material-icons/
@@ -18,59 +16,67 @@ const iconPaths = {
     playlistAdd: 'M14 10H2v2h12v-2zm0-4H2v2h12V6zm4 8v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM2 16h8v-2H2v2z',
 }
 
-class IconButton extends HTMLElement {
+export class IconButton extends HTMLElement {
     static get observedAttributes() {
         return ['icon', 'active'];
     }
 
     constructor() {
         super();
-
-        checkRequiredAttributes(['icon'], this);
-
-        const svg = document.createElementNS(SVG_NAMESPACE, 'svg');
-
-        svg.setAttribute('class', 'cursor-pointer fill-current hover:text-yellow-500 transform hover:scale-125 transition-all ease-out duration-200');
-        svg.setAttribute('viewBox', '0 0 24 24');
-
-        const path = document.createElementNS(SVG_NAMESPACE, 'path');
-
-        svg.appendChild(path);
-        this.appendChild(svg);
-
-        setActiveStyle(this);
     }
 
-    attributeChangedCallback(attributeName) {
-        if (attributeName === 'active') {
-            setActiveStyle(this);
-        } else if (attributeName === 'icon') {
-            setIcon(this);
+    connectedCallback() {
+        if (!this._rendered) {
+            this._render();
+            this._rendered = true;
         }
     }
-}
 
-function setActiveStyle(element) {
-    const svg = element.getElementsByTagNameNS(SVG_NAMESPACE, 'svg')[0];
+    attributeChangedCallback(attributeName, oldValue, newValue) {
+        if (!this._rendered) {
+            return;
+        }
 
-    if (element.getAttribute('active') !== null) {
-        svg.classList.replace('text-blue-900', 'text-yellow-500');
-    } else {
-        svg.classList.add('text-blue-900', 'text-yellow-500');
-    }
-}
-
-function setIcon(element) {
-    const path = element.getElementsByTagNameNS(SVG_NAMESPACE, 'path')[0];
-    const icon = element.getAttribute('icon');
-
-    const pathString = iconPaths[icon];
-
-    if (!pathString) {
-        throw new Error(`Icon ${icon} not supported.`);
+        if (attributeName === 'active') {
+            this._setActive(newValue);
+        } else if (attributeName === 'icon') {
+            this._setIcon(newValue);
+        }
     }
 
-    path.setAttribute('d', iconPaths[icon]);
+    _render() {
+        this._svg = document.createElementNS(SVG_NAMESPACE, 'svg');
+        this._svg.setAttribute('class', 'cursor-pointer fill-current hover:text-yellow-500 transform hover:scale-125 transition-all ease-out duration-200');
+        this._svg.setAttribute('viewBox', '0 0 24 24');
+
+        this._path = document.createElementNS(SVG_NAMESPACE, 'path');
+
+        this._svg.appendChild(this._path);
+        this.appendChild(this._svg);
+
+        this._setIcon(this.getAttribute('icon'));
+        this._setActive(this.getAttribute('active'));
+    }
+
+    _setIcon(value) {
+        if (value === null) {
+            return;
+        }
+
+        if (!iconPaths[value]) {
+            throw new Error(`Icon ${value} not supported.`)
+        }
+
+        this._path.setAttribute('d', iconPaths[value]);
+    }
+
+    _setActive(value) {
+        if (value === 'true' || value === '') {
+            this._svg.classList.replace('text-blue-900', 'text-yellow-500');
+        } else {
+            this._svg.classList.add('text-blue-900', 'text-yellow-500');
+        }
+    }
 }
 
 customElements.define('icon-button', IconButton);
