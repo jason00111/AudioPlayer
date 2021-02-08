@@ -88,6 +88,12 @@ function searchFMA({ searchTerms, page }) {
       const songs = Array.from(fmaDocument.getElementsByClassName('playtxt'))
         .map(songDiv => {
           const nameAnchor = songDiv.getElementsByClassName('ptxt-track')[0].firstElementChild;
+
+          // This is a hack
+          if (!nameAnchor) {
+            return;
+          }
+
           const pageUrl = nameAnchor.getAttribute('href');
           const title = nameAnchor.textContent;
 
@@ -98,7 +104,8 @@ function searchFMA({ searchTerms, page }) {
             pageUrl,
             name: `${artist} - ${title}`,
           }
-        });
+        })
+        .filter(song => song);
 
       const pagesElement = Array.from(
         fmaDocument.getElementsByClassName('pagination-full')[0]
