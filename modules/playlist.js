@@ -134,14 +134,14 @@ export function getPreviousSongInList(currentSongId) {
   const currentSongIndex = songs.findIndex(song => song.id === currentSongId);
   const previousSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
 
-  return songs[previousSongIndex].id;
+  return songs[previousSongIndex]?.id;
 }
 
 export function getNextSongInList(currentSongId) {
   const currentSongIndex = songs.findIndex(song => song.id === currentSongId);
   const nextSongIndex = (currentSongIndex + 1) % songs.length;
 
-  return songs[nextSongIndex].id;
+  return songs[nextSongIndex]?.id;
 }
 
 export function getSong(songId) {
