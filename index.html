@@ -314,8 +314,6 @@ error when playlist empty
     playNextSongInList http://127.0.0.1:8080/modules/songControls.js:91
     playNextSong http://127.0.0.1:8080/modules/songControls.js:73
     EventListener.handleEvent* http://127.0.0.1:8080/modules/songControls.js:31
-problems in chrome
-    - when first loaded, song will not play from playlist by clicking on it
 
 NEW FEATURES
 FMA?
@@ -324,20 +322,18 @@ save history?
 feedback form
 
 CRITICAL IMPROVEMENTS
-look good on mobile
 provide some simple recommendations
  - Mélomane
 handle cors error when loading file
  - eg: files protected by copyright
 don't play next song if song wasn't played from playlist
- - need to abstract out playlist so it plays the next file in the item
 make components extend built-in elements
-scrolling jumps when playlist changes and first song is played
+scrolling jumps when playlist changes
+scrolling jumps when first song is played
 
 IMPROVEMENTS
 host cors proxy?
 have cors proxy retry backups
-show alt text for buttons? aria?
 include files other than mp3
 play/add all?
 seek 5 seconds?

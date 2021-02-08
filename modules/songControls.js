@@ -6,6 +6,7 @@ import {
   getAllSongs,
   getFirstSong,
 } from './playlist.js'
+import { audioContext } from './audio.js';
 
 const audioElement = document.getElementById('audio');
 const playPauseButton = document.getElementById('playPauseButton');
@@ -74,6 +75,15 @@ function togglePlay() {
 }
 
 export function play() {
+  if (audioContext.state === 'suspended') {
+    audioContext.resume()
+      .then(() => {
+        play();
+      });
+
+    return;
+  }
+
   state.playing = true;
   audioElement.play();
 
