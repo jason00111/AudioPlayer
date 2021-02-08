@@ -1,3 +1,19 @@
+<!--    Web Audio Player                                                        -->
+<!--    Copyright (C) 2021                                                      -->
+
+<!--    This program is free software: you can redistribute it and/or modify    -->
+<!--    it under the terms of the GNU General Public License as published by    -->
+<!--    the Free Software Foundation, either version 3 of the License, or       -->
+<!--    (at your option) any later version.                                     -->
+
+<!--    This program is distributed in the hope that it will be useful,         -->
+<!--    but WITHOUT ANY WARRANTY; without even the implied warranty of          -->
+<!--    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           -->
+<!--    GNU General Public License for more details.                            -->
+
+<!--    You should have received a copy of the GNU General Public License       -->
+<!--    along with this program.  If not, see <https://www.gnu.org/licenses/>.  -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,7 +112,7 @@
                  class="border-t-2 border-l-2 border-r-2 border-blue-200 rounded-t-2xl px-4 py-2 mx-0.5 transition-all ease-in-out duration-300 hover:bg-blue-200 cursor-pointer">
                 Internet Archive
             </div>
-            <div id="freeMusicArchiveTabButton"
+            <div id="fmaTabButton"
                  class="border-t-2 border-l-2 border-r-2 border-blue-200 rounded-t-2xl px-4 py-2 mx-0.5 transition-all ease-in-out duration-300 hover:bg-blue-200 cursor-pointer">
                 Free Music Archive
             </div>
@@ -151,10 +167,24 @@
             </div>
         </div>
 
+        <template id="fileTemplate">
+            <div class="file flex">
+                <div class="fileControls text-blue-900 fill-current flex justify-center items-center space-x-1">
+                    <play-pause-button class="filePlayButton h-7 w-7" title="Play"
+                                       icon="play"></play-pause-button>
+                    <icon-button class="fileAddButton h-6 w-6" title="Add To Playlist"
+                                 icon="playlistAdd"></icon-button>
+                </div>
+                <div class="fileName mx-2 px-2 cursor-pointer hover:bg-yellow-500 transition-all ease-in-out duration-300 rounded-2xl">
+                    File Name
+                </div>
+            </div>
+        </template>
+
         <div id="internetArchiveTab"
              class="bg-blue-200 p-3 space-y-2 border-2 border-blue-200 rounded-2xl rounded-tl-none hidden">
             <div class="m-1">
-                Add files from Internet Archive:
+                Add files from the Internet Archive:
             </div>
 
             <div class="flex items-center">
@@ -178,12 +208,12 @@
 
             <div id="internetArchiveList"></div>
 
-            <div id="pageControls" class="hidden flex text-xs space-x-2 m-2">
-                <div id="pageIndicator" class="p-2"></div>
-                <div id="previousPage" class="cursor-pointer rounded-full bg-blue-100 p-2">PREVIOUS</div>
-                <div id="nextPage" class="cursor-pointer rounded-full bg-blue-100 p-2">NEXT</div>
-                <loading-spinner id="pageLoading" class="h-9 w-9"></loading-spinner>
-                <div id="pageSearchError" class="hidden text-red-500 p-2">
+            <div id="iaPageControls" class="hidden flex text-xs space-x-2 m-2">
+                <div id="iaPageIndicator" class="p-2"></div>
+                <div id="iaPreviousPage" class="cursor-pointer rounded-full bg-blue-100 p-2">PREVIOUS</div>
+                <div id="iaNextPage" class="cursor-pointer rounded-full bg-blue-100 p-2">NEXT</div>
+                <loading-spinner id="iaPageLoading" class="h-9 w-9"></loading-spinner>
+                <div id="iaPageSearchError" class="hidden text-red-500 p-2">
                     There was a problem searching the Internet Archive
                 </div>
             </div>
@@ -208,27 +238,52 @@
                     </div>
                 </div>
             </template>
+        </div>
 
-            <template id="fileTemplate">
-                <div class="file flex">
-                    <div class="fileControls text-blue-900 fill-current flex justify-center items-center space-x-1">
-                        <play-pause-button class="filePlayButton h-7 w-7" title="Play"
-                                           icon="play"></play-pause-button>
-                        <icon-button class="fileAddButton h-6 w-6" title="Add To Playlist"
-                                     icon="playlistAdd"></icon-button>
-                    </div>
-                    <div class="fileName mx-2 px-2 cursor-pointer hover:bg-yellow-500 transition-all ease-in-out duration-300 rounded-2xl">
-                        File Name
-                    </div>
+        <div id="fmaTab"
+             class="bg-blue-200 p-3 space-y-2 border-2 border-blue-200 rounded-2xl rounded-tl-none hidden">
+            <div class="m-1">
+                Add files from the Free Music Archive:
+            </div>
+
+            <div class="flex items-center">
+                <input id="fmaSearchInput" type="text" class="rounded-full px-3 py-1.5 outline-none">
+
+                <button id="fmaSearchButton"
+                        class="px-3 py-2 m-2 bg-blue-900 text-blue-100 rounded-full transition-all ease-in-out duration-300 text-xs hover:bg-yellow-500">
+                    SEARCH
+                </button>
+
+                <loading-spinner id="fmaSearchLoading" class="h-9 w-9"></loading-spinner>
+
+                <div id="fmaSearchError" class="hidden text-red-500">
+                    There was a problem searching the Free Music Archive
                 </div>
-            </template>
+            </div>
+
+            <div id="fmaNoResults" class="hidden m-1">
+                No results found
+            </div>
+
+            <div id="fmaList"></div>
+
+            <div id="fmaPageControls" class="hidden flex text-xs space-x-2 m-2">
+                <div id="fmaPageIndicator" class="p-2"></div>
+                <div id="fmaPreviousPage" class="cursor-pointer rounded-full bg-blue-100 p-2">PREVIOUS</div>
+                <div id="fmaNextPage" class="cursor-pointer rounded-full bg-blue-100 p-2">NEXT</div>
+                <loading-spinner id="fmaPageLoading" class="h-9 w-9"></loading-spinner>
+                <div id="fmaPageSearchError" class="hidden text-red-500 p-2">
+                    There was a problem searching the Internet Archive
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
 
 <div class="text-xs my-12 p-6 max-w-screen-md space-y-2 text-center">
     <p>
-        Music found at
+        Music in default playlist found at
         <a href="https://freemusicarchive.org" target="_blank" class="text-blue-700">freemusicarchive.org</a>
         is licensed under a
         <a href="https://creativecommons.org/licenses/by-sa/3.0/us/" target="_blank" class="text-blue-700">
@@ -236,10 +291,11 @@
         </a>
     </p>
     <p class="">
-        View source at
+        View source code at
         <a href="https://github.com/jason00111" target="_blank" class="text-blue-700">
             GitHub <img alt="View source on GitHub" src="icons/GitHub-Mark-64px.png" class="h-4 inline">
         </a>
+        or using your browser's developer tools.
     </p>
 </div>
 
@@ -258,7 +314,8 @@ error when playlist empty
     playNextSongInList http://127.0.0.1:8080/modules/songControls.js:91
     playNextSong http://127.0.0.1:8080/modules/songControls.js:73
     EventListener.handleEvent* http://127.0.0.1:8080/modules/songControls.js:31
-
+problems in chrome
+    - when first loaded, song will not play from playlist by clicking on it
 
 NEW FEATURES
 FMA?

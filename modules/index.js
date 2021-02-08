@@ -9,3 +9,4 @@ import './tabs.js';
 import './webFile.js';
 import './localFile.js';
 import './internetArchive.js';
+import './freeMusicArchive.js';

@@ -1,49 +1,36 @@
 import { playClick } from './clickSound.js';
 
-const webFileTabButton = document.getElementById('webFileTabButton');
-const localFileTabButton = document.getElementById('localFileTabButton');
-const internetArchiveTabButton = document.getElementById('internetArchiveTabButton');
+const tabs = [
+    {
+        name: 'webFile',
+    },
+    {
+        name: 'localFile',
+    },
+    {
+        name: 'internetArchive',
+    },
+    {
+        name: 'fma',
+    },
+]
 
-const webFileTab = document.getElementById('webFileTab');
-const localFileTab = document.getElementById('localFileTab');
-const internetArchiveTab = document.getElementById('internetArchiveTab');
+tabs.forEach(tab => {
+    tab.button = document.getElementById(`${tab.name}TabButton`);
+    tab.tab = document.getElementById(`${tab.name}Tab`);
+    tab.button.addEventListener('click', () => openTab(tab));
+});
 
-[
-    webFileTabButton,
-    localFileTabButton,
-    internetArchiveTabButton,
-].forEach(button => button.addEventListener('click', playClick));
-
-webFileTabButton.addEventListener('click', () => openTab('web'));
-localFileTabButton.addEventListener('click', () => openTab('local'));
-internetArchiveTabButton.addEventListener('click', () => openTab('internetArchive'));
+tabs.forEach(tab => tab.button.addEventListener('click', playClick));
 
 function openTab(tab) {
     const selectedClass = 'bg-blue-200';
 
-    if (tab === 'web') {
-        webFileTab.classList.remove('hidden');
-        localFileTab.classList.add('hidden');
-        internetArchiveTab.classList.add('hidden');
+    tabs.forEach(tab => {
+        tab.tab.classList.add('hidden');
+        tab.button.classList.remove(selectedClass);
+    });
 
-        webFileTabButton.classList.add(selectedClass);
-        localFileTabButton.classList.remove(selectedClass);
-        internetArchiveTabButton.classList.remove(selectedClass);
-    } else if (tab === 'local') {
-        webFileTab.classList.add('hidden');
-        localFileTab.classList.remove('hidden');
-        internetArchiveTab.classList.add('hidden');
-
-        webFileTabButton.classList.remove(selectedClass);
-        localFileTabButton.classList.add(selectedClass);
-        internetArchiveTabButton.classList.remove(selectedClass);
-    } else if (tab === 'internetArchive') {
-        webFileTab.classList.add('hidden');
-        localFileTab.classList.add('hidden');
-        internetArchiveTab.classList.remove('hidden');
-
-        webFileTabButton.classList.remove(selectedClass);
-        localFileTabButton.classList.remove(selectedClass);
-        internetArchiveTabButton.classList.add(selectedClass);
-    }
+    tab.tab.classList.remove('hidden');
+    tab.button.classList.add(selectedClass);
 }

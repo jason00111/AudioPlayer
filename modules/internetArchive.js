@@ -1,6 +1,7 @@
 import { playClick } from './clickSound.js';
 import { addSongs } from './playlist.js';
 import { setSongName, play } from './songControls.js';
+import { fetchThroughProxy } from './common.js';
 
 const internetArchiveList = document.getElementById('internetArchiveList');
 const internetArchiveItemTemplate = document.getElementById('internetArchiveItemTemplate');
@@ -10,15 +11,14 @@ const fileTemplate = document.getElementById('fileTemplate');
 const internetArchiveSearchLoading = document.getElementById('internetArchiveSearchLoading');
 const internetArchiveSearchError = document.getElementById('internetArchiveSearchError');
 const audioElement = document.getElementById('audio');
-const previousPageButton = document.getElementById('previousPage');
-const nextPageButton = document.getElementById('nextPage');
-const pageIndicator = document.getElementById('pageIndicator');
-const pageControlsElement = document.getElementById('pageControls');
-const pageLoadingElement = document.getElementById('pageLoading');
-const pageSearchError = document.getElementById('pageSearchError');
+const previousPageButton = document.getElementById('iaPreviousPage');
+const nextPageButton = document.getElementById('iaNextPage');
+const pageIndicator = document.getElementById('iaPageIndicator');
+const pageControlsElement = document.getElementById('iaPageControls');
+const pageLoadingElement = document.getElementById('iaPageLoading');
+const pageSearchError = document.getElementById('iaPageSearchError');
 const internetArchiveNoResults = document.getElementById('internetArchiveNoResults');
 
-const CORS_PROXY_PREFIX = 'http://api.allorigins.win/get?url=';
 const INTERNET_ARCHIVE_DOWNLOAD_PREFIX = 'https://archive.org/download/'
 
 const state = {
@@ -130,17 +130,10 @@ function searchInternetArchive({ searchTerms, page }) {
 function findIAFiles(identifier) {
     const url = `${INTERNET_ARCHIVE_DOWNLOAD_PREFIX}${identifier}/${identifier}_files.xml`;
 
-    return fetch(CORS_PROXY_PREFIX + url)
-        .then(response => {
-            if (!response.ok) {
-                throw Error(response.statusText);
-            }
-
-            return response.json();
-        })
-        .then(json => {
+    return fetchThroughProxy(url)
+        .then(result => {
             const parser = new DOMParser();
-            const xml = parser.parseFromString(json.contents, 'text/xml');
+            const xml = parser.parseFromString(result, 'text/xml');
 
             const files = [];
             for (let file of xml.getElementsByTagName('file')) {
@@ -269,7 +262,7 @@ function populateIAFiles({ itemElement, item, files }) {
         const url = `${INTERNET_ARCHIVE_DOWNLOAD_PREFIX}${item.identifier}/${file}`;
         const name = file.slice(0, -4);
 
-        fileNameElement.textContent = file;
+        fileNameElement.textContent = name;
 
         fileNameElement.addEventListener('click', playFile);
         filePlayButton.addEventListener('click', playFile);

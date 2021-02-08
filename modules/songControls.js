@@ -28,22 +28,18 @@ nextButton.addEventListener('click', playNextSong);
 audioElement.addEventListener('ended', playNextSong);
 shuffleButton.addEventListener('click', toggleShuffle);
 
-audioElement.addEventListener('stalled', () => {
-    console.log('stalled');
-});
-
-document.addEventListener('keydown', (event) => {
-    if (event.code === 'Space') {
-        supportedKeyPressed(event);
-        togglePlay();
-    } else if (event.code === 'ArrowLeft') {
-        supportedKeyPressed(event);
-        jumpBack();
-    } else if (event.code === 'ArrowRight') {
-        supportedKeyPressed(event);
-        jumpForward();
-    }
-});
+// document.addEventListener('keydown', (event) => {
+//     if (event.code === 'Space') {
+//         supportedKeyPressed(event);
+//         togglePlay();
+//     } else if (event.code === 'ArrowLeft') {
+//         supportedKeyPressed(event);
+//         jumpBack();
+//     } else if (event.code === 'ArrowRight') {
+//         supportedKeyPressed(event);
+//         jumpForward();
+//     }
+// });
 
 [
     playPauseButton,
