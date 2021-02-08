@@ -1,4 +1,4 @@
-const CORS_PROXY_PREFIX = 'http://api.allorigins.win/get?url=';
+const CORS_PROXY_PREFIX = 'https://api.allorigins.win/get?url=';
 
 export function fetchThroughProxy(url) {
   const encodedUrl = encodeURIComponent(url)
