@@ -18,23 +18,23 @@ clickFilter.Q.value = 8;
 clickGain.gain.value = clickMinGain;
 
 export function playClick() {
-    const buffer = audioContext.createBuffer(1, 0.2 * audioContext.sampleRate, audioContext.sampleRate);
-    const bufferData = buffer.getChannelData(0);
-    for (let i = 0; i < buffer.length; i++) {
-        bufferData[i] = Math.random() * 2 - 1;
-    }
+  const buffer = audioContext.createBuffer(1, 0.2 * audioContext.sampleRate, audioContext.sampleRate);
+  const bufferData = buffer.getChannelData(0);
+  for (let i = 0; i < buffer.length; i++) {
+    bufferData[i] = Math.random() * 2 - 1;
+  }
 
-    const bufferSource = audioContext.createBufferSource();
-    bufferSource.buffer = buffer;
+  const bufferSource = audioContext.createBufferSource();
+  bufferSource.buffer = buffer;
 
-    bufferSource.connect(clickFilter);
-    // bufferSource.connect(clickGain);
-    bufferSource.start();
+  bufferSource.connect(clickFilter);
+  // bufferSource.connect(clickGain);
+  bufferSource.start();
 
-    const currentTime = audioContext.currentTime;
+  const currentTime = audioContext.currentTime;
 
-    clickGain.gain.setValueAtTime(clickMinGain, currentTime);
-    clickGain.gain.setTargetAtTime(clickMaxGain, currentTime, clickAttackConstant);
-    clickGain.gain.setValueAtTime(clickMaxGain, currentTime + clickDuration);
-    clickGain.gain.setTargetAtTime(clickMinGain, currentTime + clickDuration, clickReleaseConstant);
+  clickGain.gain.setValueAtTime(clickMinGain, currentTime);
+  clickGain.gain.setTargetAtTime(clickMaxGain, currentTime, clickAttackConstant);
+  clickGain.gain.setValueAtTime(clickMaxGain, currentTime + clickDuration);
+  clickGain.gain.setTargetAtTime(clickMinGain, currentTime + clickDuration, clickReleaseConstant);
 }

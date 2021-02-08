@@ -9,25 +9,25 @@ addSongFromWebButton.addEventListener('click', playClick);
 addSongFromWebButton.addEventListener('click', addSongFromWeb);
 
 function addSongFromWeb() {
-    let name;
+  let name;
 
-    if (addSongFromWebName.value.trim() === '') {
-        name = getFileNameFromUrl(addSongFromWebUrl.value);
-    } else {
-        name = addSongFromWebName.value;
+  if (addSongFromWebName.value.trim() === '') {
+    name = getFileNameFromUrl(addSongFromWebUrl.value);
+  } else {
+    name = addSongFromWebName.value;
+  }
+
+  addSongs([
+    {
+      path: addSongFromWebUrl.value,
+      name: name,
     }
+  ]);
 
-    addSongs([
-        {
-            path: addSongFromWebUrl.value,
-            name: name,
-        }
-    ]);
-
-    addSongFromWebUrl.value = '';
-    addSongFromWebName.value = '';
+  addSongFromWebUrl.value = '';
+  addSongFromWebName.value = '';
 }
 
 function getFileNameFromUrl(url) {
-    return (new URL(url)).pathname.split('/').slice(-1)[0].split('.')[0];
+  return (new URL(url)).pathname.split('/').slice(-1)[0].split('.')[0];
 }

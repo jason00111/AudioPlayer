@@ -8,11 +8,11 @@ addSongLocalButton.addEventListener('click', playClick);
 addSongLocalButton.addEventListener('click', addSongLocal);
 
 function addSongLocal() {
-    const songs = Array.from(localFileInput.files)
-        .map(file => ({
-            path: URL.createObjectURL(file),
-            name: file.name.split('.')[0],
-        }));
+  const songs = Array.from(localFileInput.files)
+    .map(file => ({
+      path: URL.createObjectURL(file),
+      name: file.name.split('.')[0],
+    }));
 
-    addSongs(songs);
+  addSongs(songs);
 }

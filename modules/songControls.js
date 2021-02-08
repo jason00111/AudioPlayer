@@ -1,10 +1,10 @@
 import { playClick } from './clickSound.js';
 import {
-    getPreviousSongInList,
-    getNextSongInList,
-    getSong,
-    getAllSongs,
-    getFirstSong,
+  getPreviousSongInList,
+  getNextSongInList,
+  getSong,
+  getAllSongs,
+  getFirstSong,
 } from './playlist.js'
 
 const audioElement = document.getElementById('audio');
@@ -17,9 +17,9 @@ const mainSongNameElement = document.getElementById('songName');
 const SELECTED_SONG_CLASS = 'bg-yellow-500';
 
 const state = {
-    playing: false,
-    shuffle: false,
-    playedSongs: [],
+  playing: false,
+  shuffle: false,
+  playedSongs: [],
 }
 
 playPauseButton.addEventListener('click', togglePlay);
@@ -42,150 +42,150 @@ shuffleButton.addEventListener('click', toggleShuffle);
 // });
 
 [
-    playPauseButton,
-    previousButton,
-    nextButton,
-    shuffleButton,
+  playPauseButton,
+  previousButton,
+  nextButton,
+  shuffleButton,
 ].forEach(button => button.addEventListener('click', playClick));
 
 function supportedKeyPressed(event) {
-    playClick();
-    event.preventDefault();
+  playClick();
+  event.preventDefault();
 }
 
 function jumpBack() {
-    jump(-5);
+  jump(-5);
 }
 
 function jumpForward() {
-    jump(5);
+  jump(5);
 }
 
 function jump(jumpTime) {
-    audioElement.currentTime = audioElement.currentTime + jumpTime;
+  audioElement.currentTime = audioElement.currentTime + jumpTime;
 }
 
 function togglePlay() {
-    if (state.playing) {
-        pause();
-    } else {
-        play();
-    }
+  if (state.playing) {
+    pause();
+  } else {
+    play();
+  }
 }
 
 export function play() {
-    state.playing = true;
-    audioElement.play();
+  state.playing = true;
+  audioElement.play();
 
-    playPauseButton.setAttribute('playing', 'true');
+  playPauseButton.setAttribute('playing', 'true');
 }
 
 export function pause() {
-    state.playing = false;
-    audioElement.pause();
+  state.playing = false;
+  audioElement.pause();
 
-    playPauseButton.setAttribute('playing', 'false');
+  playPauseButton.setAttribute('playing', 'false');
 }
 
 function playNextSong() {
-    if (state.shuffle) {
-        setSong(getNextShuffleSong());
-    } else {
-        playNextSongInList();
-    }
+  if (state.shuffle) {
+    setSong(getNextShuffleSong());
+  } else {
+    playNextSongInList();
+  }
 
-    play();
+  play();
 }
 
 function playPreviousSong() {
-    if (state.shuffle) {
-        playPreviouslyPlayedSong();
-    } else {
-        playPreviousSongInList();
-    }
+  if (state.shuffle) {
+    playPreviouslyPlayedSong();
+  } else {
+    playPreviousSongInList();
+  }
 
-    play();
+  play();
 }
 
 function playNextSongInList() {
-    const currentSongId = state.playedSongs[state.playedSongs.length - 1];
-    const nextSongId = getNextSongInList(currentSongId);
+  const currentSongId = state.playedSongs[state.playedSongs.length - 1];
+  const nextSongId = getNextSongInList(currentSongId);
 
-    setSong(nextSongId);
+  setSong(nextSongId);
 }
 
 function playPreviousSongInList() {
-    const currentSongId = state.playedSongs[state.playedSongs.length - 1];
-    const previousSongId = getPreviousSongInList(currentSongId);
+  const currentSongId = state.playedSongs[state.playedSongs.length - 1];
+  const previousSongId = getPreviousSongInList(currentSongId);
 
-    setSong(previousSongId);
+  setSong(previousSongId);
 }
 
 function playPreviouslyPlayedSong() {
-    if (state.playedSongs.length === 1) {
-        return;
-    }
+  if (state.playedSongs.length === 1) {
+    return;
+  }
 
-    const previousSongId = state.playedSongs[state.playedSongs.length - 2];
+  const previousSongId = state.playedSongs[state.playedSongs.length - 2];
 
-    state.playedSongs.pop();
-    state.playedSongs.pop();
+  state.playedSongs.pop();
+  state.playedSongs.pop();
 
-    setSong(previousSongId);
+  setSong(previousSongId);
 }
 
 function toggleShuffle() {
-    if (state.shuffle) {
-        state.shuffle = false;
-        shuffleButton.removeAttribute('active');
-    } else {
-        state.shuffle = true;
-        shuffleButton.setAttribute('active', '');
-    }
+  if (state.shuffle) {
+    state.shuffle = false;
+    shuffleButton.removeAttribute('active');
+  } else {
+    state.shuffle = true;
+    shuffleButton.setAttribute('active', '');
+  }
 }
 
 function getNextShuffleSong() {
-    const allSongs = getAllSongs();
+  const allSongs = getAllSongs();
 
-    const recentlyPlayedSongs = state.playedSongs.slice(-allSongs.length / 2);
-    const possibleNextSongs = allSongs.filter(songId => !recentlyPlayedSongs.includes(songId));
+  const recentlyPlayedSongs = state.playedSongs.slice(-allSongs.length / 2);
+  const possibleNextSongs = allSongs.filter(songId => !recentlyPlayedSongs.includes(songId));
 
-    const randomIndex = Math.floor(Math.random() * possibleNextSongs.length);
+  const randomIndex = Math.floor(Math.random() * possibleNextSongs.length);
 
-    return possibleNextSongs[randomIndex];
+  return possibleNextSongs[randomIndex];
 }
 
 export function setSong(songId) {
-    const song = getSong(songId);
+  const song = getSong(songId);
 
-    if (!song) {
-        console.log(`Could not find song ${songId}`);
+  if (!song) {
+    console.log(`Could not find song ${songId}`);
 
-        playPreviouslyPlayedSong();
-        return;
-    }
+    playPreviouslyPlayedSong();
+    return;
+  }
 
-    state.playedSongs.push(songId);
-    audioElement.src = song.path;
-    setSongName(song.name);
-    highlightSelectedSong();
+  state.playedSongs.push(songId);
+  audioElement.src = song.path;
+  setSongName(song.name);
+  highlightSelectedSong();
 }
 
 export function setSongName(name) {
-    mainSongNameElement.textContent = name;
-    document.title = name;
+  mainSongNameElement.textContent = name;
+  document.title = name;
 }
 
 function highlightSelectedSong() {
-    const songListElement = document.getElementById('songList');
+  const songListElement = document.getElementById('songList');
 
-    songListElement.childNodes.forEach(songElement => {
-        if (songElement.dataset.songId === state.playedSongs[state.playedSongs.length - 1]) {
-            songElement.classList.add(SELECTED_SONG_CLASS);
-        } else {
-            songElement.classList.remove(SELECTED_SONG_CLASS);
-        }
-    });
+  songListElement.childNodes.forEach(songElement => {
+    if (songElement.dataset.songId === state.playedSongs[state.playedSongs.length - 1]) {
+      songElement.classList.add(SELECTED_SONG_CLASS);
+    } else {
+      songElement.classList.remove(SELECTED_SONG_CLASS);
+    }
+  });
 }
 
 setSong(getFirstSong());
